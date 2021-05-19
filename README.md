@@ -1,3 +1,3 @@
-# CaYaTeX-Lamdera
+# Logger
 
 A Lamdera app for logging
