@@ -68,11 +68,13 @@ updateFromFrontend sessionId clientId msg model =
                     if Authentication.verify username encryptedPassword model.authenticationDict then
                         ( model
                         , Cmd.batch
-                            []
+                            [ sendToFrontend clientId (SendUser userData.user)
+                            , sendToFrontend clientId (SendMessage "Success! You are signed in.")
+                            ]
                         )
 
                     else
-                        ( model, sendToFrontend clientId (SendMessage <| "Sorry, password and username don't match") )
+                        ( model, sendToFrontend clientId (SendMessage "Sorry, password and username don't match") )
 
                 Nothing ->
                     Backend.Update.setupUser model clientId username encryptedPassword

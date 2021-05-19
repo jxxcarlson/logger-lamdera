@@ -64,7 +64,7 @@ setupUser model clientId username encryptedPassword =
     in
     ( { model | randomSeed = tokenData.seed, authenticationDict = newAuthDict }
     , Cmd.batch
-        [ sendToFrontend clientId (SendMessage "Success! You have set up your CaYaTeX account")
+        [ sendToFrontend clientId (SendMessage "Success! You have set up your account")
         , sendToFrontend clientId (SendUser user)
         ]
     )

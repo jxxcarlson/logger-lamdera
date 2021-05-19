@@ -62,7 +62,7 @@ messageRow model =
         , View.Style.bgGray 0.1
         , View.Style.fgGray 1.0
         ]
-        []
+        [ E.text model.message ]
 
 
 footerButtons model =
