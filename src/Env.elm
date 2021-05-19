@@ -9,4 +9,4 @@ dummyConfigItem =
 
 
 authKey =
-    "eqkzfABz7813-vhxvh(!)nlspm-aukemvz?/4$jhh-ekODVAZ891Qoaeaw"
+    "eqkzfABz70013-vhxvh(!)nlspm-aukemvz?/4$jhh-ekODVAZ891Qoaeaw"

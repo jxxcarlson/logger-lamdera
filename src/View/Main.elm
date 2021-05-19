@@ -28,11 +28,11 @@ mainColumn : Model -> Element FrontendMsg
 mainColumn model =
     E.column (mainColumnStyle model)
         [ E.column [ E.spacing 12, E.width (E.px <| appWidth_ model), E.height (E.px (appHeight_ model)) ]
-            [ title "CaYaTeX"
+            [ title "App"
             , header model
             , E.column [ E.spacing 12 ]
                 [ E.row [ E.spacing 12 ]
-                    [ E.text "MAIN COLUMN" ]
+                    [ E.el [ Font.color Color.white ] (E.text "MAIN COLUMN") ]
                 ]
             , footer model
             ]
