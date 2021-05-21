@@ -15,16 +15,17 @@ type alias DataFileName =
 
 
 type Data
-    = Task { start : Time.Posix, end : Time.Posix, desc : String }
+    = Task { start : Time.Posix, end : Time.Posix, desc : String, job : String }
     | Quantity { start : Time.Posix, end : Time.Posix, value : Float, desc : String }
 
 
 view : Time.Zone -> Data -> Element msg
 view zone data =
     case data of
-        Task { start, end, desc } ->
+        Task { start, end, desc, job } ->
             E.row [ E.spacing 8 ]
-                [ E.el [ E.width (E.px 100) ] (E.text <| DateTimeUtility.zonedTimeString zone start)
+                [ E.el [ E.width (E.px 100) ] (E.text job)
+                , E.el [ E.width (E.px 100) ] (E.text <| DateTimeUtility.zonedTimeString zone start)
                 , E.el [ E.width (E.px 100) ] (E.text <| DateTimeUtility.zonedTimeString zone end)
                 , E.el [ E.width (E.px 100) ] (E.text <| DateTimeUtility.elapsedTimeAsString start end)
                 , E.el [ E.width (E.px 500) ] (E.text <| desc)

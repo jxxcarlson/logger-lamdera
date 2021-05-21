@@ -57,6 +57,7 @@ init url key =
       , endTime = Nothing
       , description = ""
       , dataFile = Nothing
+      , job = ""
 
       -- UI
       , windowWidth = 600
@@ -125,6 +126,9 @@ update msg model =
         InputDescription str ->
             ( { model | description = str }, Cmd.none )
 
+        InputJob str ->
+            ( { model | job = str }, Cmd.none )
+
         SetStartTime ->
             ( { model | startTime = Just model.time }, Cmd.none )
 
@@ -136,7 +140,7 @@ update msg model =
                 ( ( Just dataFile, Just startTime, Just endTime ), Just user ) ->
                     let
                         datum =
-                            Data.Task { start = startTime, end = endTime, desc = model.description }
+                            Data.Task { start = startTime, end = endTime, desc = model.description, job = model.job }
 
                         newDataFile =
                             Data.insertDatum_ dataFile.owner dataFile.name datum dataFile

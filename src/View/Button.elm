@@ -104,11 +104,11 @@ getUsers =
 
 
 setStartTime =
-    buttonTemplate [] SetStartTime "Start"
+    buttonTemplate [ E.width (E.px 100) ] SetStartTime "Start task"
 
 
 setEndTime =
-    buttonTemplate [] SetEndTime "End"
+    buttonTemplate [ E.width (E.px 100) ] SetEndTime "End task"
 
 
 saveItem =

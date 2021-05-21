@@ -1,4 +1,4 @@
-module View.Input exposing (descriptionInput, passwordInput, usernameInput)
+module View.Input exposing (descriptionInput, jobInput, passwordInput, usernameInput)
 
 import Element as E exposing (Element, px)
 import Element.Font as Font
@@ -52,4 +52,8 @@ endTimeInput model =
 
 
 descriptionInput model =
-    inputFieldTemplate (E.px (model.windowWidth - 240)) "Description" InputDescription model.description
+    inputFieldTemplate (E.px (model.windowWidth - 448)) "Description" InputDescription model.description
+
+
+jobInput model =
+    inputFieldTemplate (E.px 100) "Job" InputJob model.job

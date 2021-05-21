@@ -32,11 +32,10 @@ view model =
 mainColumn : Model -> Element FrontendMsg
 mainColumn model =
     E.column (mainColumnStyle model)
-        [ E.column [ E.spacing 12, E.width (E.px <| appWidth_ model), E.height (E.px (appHeight_ model)) ]
-            [ viewTitle model
-            , header model
-            , body model
-            , footer model
+        [ E.column [ E.spacing 36, E.width (E.px <| appWidth_ model), E.height (E.px (appHeight_ model)) ]
+            [ header model
+            , View.Utility.showIf (model.currentUser /= Nothing) (body model)
+            , View.Utility.showIf (model.currentUser /= Nothing) (footer model)
             ]
         ]
 
@@ -44,36 +43,52 @@ mainColumn model =
 viewTitle model =
     case model.dataFile of
         Nothing ->
-            E.el [ Font.color Color.white ] (E.text "Welcome to Logger")
+            E.el [ Font.color Color.white, Font.size 24 ] (E.text "Welcome to Logger")
 
         Just dataFile ->
-            E.el [ Font.color Color.white ] (E.text <| dataFile.name)
+            E.el [ Font.color Color.white, Font.size 18 ] (E.text <| dataFile.name)
 
 
 body model =
-    E.column [ E.spacing 12, E.width (E.px <| appWidth_ model) ]
-        [ E.row [ E.spacing 36, Font.size 16, Font.color Color.white ]
-            [ Button.setStartTime
-            , Button.setEndTime
-            , viewStartTime model
-            , viewEndTime model
-            , viewElapsedTime model
-            ]
-        , E.row [ E.spacing 8 ] [ Button.saveItem, View.Input.descriptionInput model ]
+    E.column [ E.spacing 24, E.width (E.px <| appWidth_ model) ]
+        [ logItem_ model
         , case model.dataFile of
             Nothing ->
-                E.el [ Font.color Color.white, Font.size 16 ] (E.text "Sorry, no data file")
+                E.column
+                    [ E.spacing 8
+                    , E.paddingXY 12 12
+                    , E.height (E.px (model.windowHeight - 430))
+                    , E.width (E.px (model.windowWidth - 232))
+                    , Background.color Color.paleBlue
+                    , Font.size 16
+                    ]
+                    [ E.text "Sorry, no data file" ]
 
             Just dataFile ->
                 E.column
                     [ E.spacing 8
                     , E.paddingXY 12 12
-                    , E.height (E.px (model.windowHeight - 300))
-                    , E.width (E.px (model.windowWidth - 132))
+                    , E.height (E.px (model.windowHeight - 430))
+                    , E.width (E.px (model.windowWidth - 232))
                     , Background.color Color.paleBlue
                     , Font.size 16
                     ]
                     (List.map (Data.view model.zone) dataFile.data)
+        ]
+
+
+logItem_ model =
+    E.column [ E.spacing 8 ]
+        [ logItem model
+        , E.row [ E.spacing 8 ] [ Button.saveItem, View.Input.jobInput model, View.Input.descriptionInput model ]
+        ]
+
+
+logItem model =
+    E.row [ E.spacing 8, Font.size 16, Font.color Color.white ]
+        [ E.row [ E.spacing 8 ] [ Button.setStartTime, viewStartTime model ]
+        , E.row [ E.spacing 8 ] [ Button.setEndTime, viewEndTime model ]
+        , viewElapsedTime model
         ]
 
 
@@ -82,12 +97,12 @@ viewStartTime model =
         label =
             case model.startTime of
                 Nothing ->
-                    "Start time: --"
+                    "(not started)"
 
                 Just time ->
-                    "Start time: " ++ DateTimeUtility.zonedTimeString model.zone time
+                    DateTimeUtility.zonedTimeString model.zone time
     in
-    E.el [] (E.text label)
+    E.el [ E.width (E.px 100) ] (E.el [ E.centerX ] (E.text label))
 
 
 viewEndTime model =
@@ -95,12 +110,12 @@ viewEndTime model =
         label =
             case model.endTime of
                 Nothing ->
-                    "End time: --"
+                    "(not finished)"
 
                 Just time ->
-                    "End time: " ++ DateTimeUtility.zonedTimeString model.zone time
+                    DateTimeUtility.zonedTimeString model.zone time
     in
-    E.el [] (E.text label)
+    E.el [ E.width (E.px 100) ] (E.el [ E.centerX ] (E.text label))
 
 
 viewElapsedTime model =
@@ -109,7 +124,7 @@ viewElapsedTime model =
             E.el [] (E.text <| "Elapsed: " ++ DateTimeUtility.elapsedTimeAsString start end)
 
         _ ->
-            E.el [] (E.text <| "Elapsed: --")
+            E.none
 
 
 footer model =
@@ -117,7 +132,7 @@ footer model =
         [ E.spacing 12
         , E.paddingXY 0 8
         , E.height (E.px 25)
-        , E.width (E.px <| appWidth_ model)
+        , E.width (E.px <| appWidth_ model - 88)
         , Font.size 14
         , E.inFront (View.Popup.admin model)
         ]
@@ -152,31 +167,33 @@ header model =
 
 
 notSignedInHeader model =
-    E.row
-        [ E.spacing 12
-        , Font.size 14
-        ]
-        [ Button.signIn
-        , View.Input.usernameInput model
-        , View.Input.passwordInput model
-        , E.el [ E.height (E.px 31), E.paddingXY 12 3, Background.color Color.paleBlue ]
-            (E.el [ E.centerY ] (E.text model.message))
+    E.column [ E.spacing 24 ]
+        [ viewTitle model
+        , E.row
+            [ E.spacing 12
+            , Font.size 14
+            ]
+            [ Button.signIn
+            , View.Input.usernameInput model
+            , View.Input.passwordInput model
+            , E.el [ E.height (E.px 31), E.paddingXY 12 3, Background.color Color.paleBlue ]
+                (E.el [ E.centerY ] (E.text model.message))
+            ]
         ]
 
 
 signedInHeader model user =
-    E.row [ E.spacing 12, Font.color Color.white, Font.size 16 ]
+    E.row [ E.spacing 24, Font.color Color.white, Font.size 16, E.width (E.px (appWidth_ model)) ]
         [ Button.signOut user.username
+        , viewTitle model
         , viewTime model.zone model.time
         ]
 
 
 viewTime : Time.Zone -> Time.Posix -> Element msg
 viewTime zone time =
-    E.row [ E.spacing 16 ]
-        [ E.text <| DateTimeUtility.zonedDateString zone time
-        , E.text <| DateTimeUtility.zonedTimeString zone time
-        ]
+    E.el [ E.width (E.px 100) ]
+        (E.text <| DateTimeUtility.zonedDateString zone time)
 
 
 docsInfo model n =
