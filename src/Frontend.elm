@@ -8,6 +8,8 @@ import Frontend.Cmd
 import Frontend.Update
 import Html exposing (Html)
 import Lamdera exposing (sendToBackend)
+import Task
+import Time
 import Types exposing (..)
 import Url exposing (Url)
 import View.Main
@@ -24,7 +26,7 @@ app =
         , onUrlChange = UrlChanged
         , update = update
         , updateFromBackend = updateFromBackend
-        , subscriptions = \m -> Sub.none
+        , subscriptions = \m -> subscriptions m
         , view = view
         }
 
@@ -32,6 +34,7 @@ app =
 subscriptions model =
     Sub.batch
         [ Browser.Events.onResize (\w h -> GotNewWindowDimensions w h)
+        , Time.every 1000 Tick
         ]
 
 
@@ -40,9 +43,18 @@ init url key =
     ( { key = key
       , url = url
       , message = "Welcome!"
+      , time = Time.millisToPosix 0
+      , zone = Time.utc
 
       -- ADMIN
       , users = []
+
+      -- LOG
+      , inputStartTime = ""
+      , inputEndTime = ""
+      , startTime = Nothing
+      , endTime = Nothing
+      , description = ""
 
       -- UI
       , windowWidth = 600
@@ -54,13 +66,17 @@ init url key =
       , inputUsername = ""
       , inputPassword = ""
       }
-    , Cmd.batch [ Frontend.Cmd.setupWindow ]
+    , Cmd.batch
+        [ Frontend.Cmd.setupWindow
+        , Task.perform AdjustTimeZone Time.here
+        ]
     )
 
 
 update : FrontendMsg -> Model -> ( Model, Cmd FrontendMsg )
 update msg model =
     case msg of
+        -- SYSTEM
         UrlClicked urlRequest ->
             case urlRequest of
                 Internal url ->
@@ -74,6 +90,16 @@ update msg model =
         UrlChanged url ->
             ( { model | url = url }, Cmd.none )
 
+        AdjustTimeZone newZone ->
+            ( { model | zone = newZone }
+            , Cmd.none
+            )
+
+        Tick newTime ->
+            ( { model | time = newTime }
+            , Cmd.none
+            )
+
         -- UI
         GotNewWindowDimensions w h ->
             ( { model | windowWidth = w, windowHeight = h }, Cmd.none )
@@ -86,6 +112,22 @@ update msg model =
 
         NoOpFrontendMsg ->
             ( model, Cmd.none )
+
+        -- LOG
+        InputStartTime str ->
+            ( { model | inputStartTime = str }, Cmd.none )
+
+        InputEndTime str ->
+            ( { model | inputEndTime = str }, Cmd.none )
+
+        InputDescription str ->
+            ( { model | description = str }, Cmd.none )
+
+        SetStartTime ->
+            ( { model | startTime = Just model.time }, Cmd.none )
+
+        SetEndTime ->
+            ( { model | endTime = Just model.time }, Cmd.none )
 
         -- USER
         SignIn ->

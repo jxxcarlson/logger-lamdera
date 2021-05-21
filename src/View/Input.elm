@@ -27,9 +27,21 @@ passwordTemplate width_ default msg text =
         }
 
 
+
+-- USER
+
+
 usernameInput model =
     inputFieldTemplate (E.px 120) "Username" InputUsername model.inputUsername
 
 
 passwordInput model =
     passwordTemplate (E.px 120) "Password" InputPassword model.inputPassword
+
+
+
+-- DATA
+
+
+startTimeInput model =
+    inputFieldTemplate (E.px 120) "Start" InputStartTime model.inputStartTime

@@ -1,9 +1,13 @@
 module View.Main exposing (view)
 
+import Calendar
+import DateTime exposing (DateTime)
+import DateTimeUtility
 import Element as E exposing (Element)
 import Element.Background as Background
 import Element.Font as Font
 import Html exposing (Html)
+import Time
 import Types exposing (..)
 import View.Button as Button
 import View.Color as Color
@@ -30,13 +34,55 @@ mainColumn model =
         [ E.column [ E.spacing 12, E.width (E.px <| appWidth_ model), E.height (E.px (appHeight_ model)) ]
             [ title "App"
             , header model
-            , E.column [ E.spacing 12 ]
-                [ E.row [ E.spacing 12 ]
-                    [ E.el [ Font.color Color.white ] (E.text "MAIN COLUMN") ]
-                ]
+            , body model
             , footer model
             ]
         ]
+
+
+body model =
+    E.row [ E.spacing 36, Font.size 16, Font.color Color.white ]
+        [ Button.setStartTime
+        , Button.setEndTime
+        , viewStartTime model
+        , viewEndTime model
+        , viewElapsedTime model
+        ]
+
+
+viewStartTime model =
+    let
+        label =
+            case model.startTime of
+                Nothing ->
+                    "Start time: --"
+
+                Just time ->
+                    "Start time: " ++ DateTimeUtility.zonedTimeString model.zone time
+    in
+    E.el [] (E.text label)
+
+
+viewEndTime model =
+    let
+        label =
+            case model.endTime of
+                Nothing ->
+                    "End time: --"
+
+                Just time ->
+                    "End time: " ++ DateTimeUtility.zonedTimeString model.zone time
+    in
+    E.el [] (E.text label)
+
+
+viewElapsedTime model =
+    case ( model.startTime, model.endTime ) of
+        ( Just start, Just end ) ->
+            E.el [] (E.text <| "Elapsed: " ++ DateTimeUtility.elapsedTimeAsString start end)
+
+        _ ->
+            E.el [] (E.text <| "Elapsed: --")
 
 
 footer model =
@@ -92,8 +138,17 @@ notSignedInHeader model =
 
 
 signedInHeader model user =
-    E.row [ E.spacing 12 ]
+    E.row [ E.spacing 12, Font.color Color.white, Font.size 16 ]
         [ Button.signOut user.username
+        , viewTime model.zone model.time
+        ]
+
+
+viewTime : Time.Zone -> Time.Posix -> Element msg
+viewTime zone time =
+    E.row [ E.spacing 16 ]
+        [ E.text <| DateTimeUtility.zonedDateString zone time
+        , E.text <| DateTimeUtility.zonedTimeString zone time
         ]
 
 

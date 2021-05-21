@@ -3,6 +3,8 @@ module View.Button exposing
     , getUsers
     , linkTemplate
     , runTask
+    , setEndTime
+    , setStartTime
     , signIn
     , signOut
     )
@@ -94,3 +96,15 @@ adminPopup model =
 
 getUsers =
     buttonTemplate [] GetUsers "Get Users"
+
+
+
+-- LOG
+
+
+setStartTime =
+    buttonTemplate [] SetStartTime "Start"
+
+
+setEndTime =
+    buttonTemplate [] SetEndTime "End"

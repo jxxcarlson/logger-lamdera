@@ -6,6 +6,8 @@ import Browser.Dom as Dom
 import Browser.Navigation exposing (Key)
 import Http
 import Random
+import Task
+import Time
 import Url exposing (Url)
 import User exposing (User)
 
@@ -14,9 +16,18 @@ type alias FrontendModel =
     { key : Key
     , url : Url
     , message : String
+    , time : Time.Posix
+    , zone : Time.Zone
 
     -- ADMIN
     , users : List User
+
+    -- LOG
+    , inputStartTime : String
+    , inputEndTime : String
+    , startTime : Maybe Time.Posix
+    , endTime : Maybe Time.Posix
+    , description : String
 
     -- USER
     , currentUser : Maybe User
@@ -56,10 +67,18 @@ type FrontendMsg
     = UrlClicked UrlRequest
     | UrlChanged Url
     | GotViewport Dom.Viewport
+    | Tick Time.Posix
+    | AdjustTimeZone Time.Zone
     | NoOpFrontendMsg
       -- UI
     | GotNewWindowDimensions Int Int
     | ChangePopupStatus PopupStatus
+      -- LOG
+    | InputStartTime String
+    | InputEndTime String
+    | InputDescription String
+    | SetStartTime
+    | SetEndTime
       -- USER
     | SignIn
     | SignOut
