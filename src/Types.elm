@@ -4,6 +4,7 @@ import Authentication exposing (AuthenticationDict)
 import Browser exposing (UrlRequest)
 import Browser.Dom as Dom
 import Browser.Navigation exposing (Key)
+import Data.Data exposing (Data, DataFile)
 import Http
 import Random
 import Task
@@ -28,6 +29,7 @@ type alias FrontendModel =
     , startTime : Maybe Time.Posix
     , endTime : Maybe Time.Posix
     , description : String
+    , dataFile : Maybe DataFile
 
     -- USER
     , currentUser : Maybe User
@@ -52,6 +54,7 @@ type PopupStatus
 
 type alias BackendModel =
     { message : String
+    , time : Time.Posix
 
     -- RANDOM
     , randomSeed : Random.Seed
@@ -60,6 +63,7 @@ type alias BackendModel =
 
     -- USER
     , authenticationDict : AuthenticationDict
+    , dataDict : Data.Data.DataDict
     }
 
 
@@ -79,6 +83,7 @@ type FrontendMsg
     | InputDescription String
     | SetStartTime
     | SetEndTime
+    | SaveItem
       -- USER
     | SignIn
     | SignOut
@@ -96,11 +101,15 @@ type ToBackend
     | SendUsers
       -- USER
     | SignInOrSignUp String String
+      -- LOG
+    | GetDatafile ( User, DataFileName )
+    | SaveDatum ( User, DataFileName ) Data
 
 
 type BackendMsg
     = NoOpBackendMsg
     | GotAtomsphericRandomNumber (Result Http.Error String)
+    | BTick Time.Posix
 
 
 type ToFrontend
@@ -110,3 +119,12 @@ type ToFrontend
     | GotUsers (List User)
       -- USER
     | SendUser User
+    | GotDataFile DataFile
+
+
+type alias UserName =
+    String
+
+
+type alias DataFileName =
+    String

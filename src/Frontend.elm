@@ -4,6 +4,7 @@ import Authentication
 import Browser exposing (UrlRequest(..))
 import Browser.Events
 import Browser.Navigation as Nav
+import Data.Data as Data
 import Frontend.Cmd
 import Frontend.Update
 import Html exposing (Html)
@@ -55,6 +56,7 @@ init url key =
       , startTime = Nothing
       , endTime = Nothing
       , description = ""
+      , dataFile = Nothing
 
       -- UI
       , windowWidth = 600
@@ -129,6 +131,32 @@ update msg model =
         SetEndTime ->
             ( { model | endTime = Just model.time }, Cmd.none )
 
+        SaveItem ->
+            case ( ( model.dataFile, model.startTime, model.endTime ), model.currentUser ) of
+                ( ( Just dataFile, Just startTime, Just endTime ), Just user ) ->
+                    let
+                        datum =
+                            Data.Task { start = startTime, end = endTime, desc = model.description }
+
+                        newDataFile =
+                            Data.insertDatum_ dataFile.owner dataFile.name datum dataFile
+                    in
+                    ( { model | dataFile = Just newDataFile, startTime = Nothing, endTime = Nothing, description = "" }
+                    , sendToBackend (SaveDatum ( user, dataFile.name ) datum)
+                    )
+
+                ( ( Nothing, _, _ ), _ ) ->
+                    ( { model | message = "Sorry, no log file" }, Cmd.none )
+
+                ( ( _, Nothing, _ ), _ ) ->
+                    ( { model | message = "Sorry, start time not set" }, Cmd.none )
+
+                ( ( _, _, Nothing ), _ ) ->
+                    ( { model | message = "Sorry, end time not set" }, Cmd.none )
+
+                ( _, _ ) ->
+                    ( { model | message = "Sorry, no user signed in!" }, Cmd.none )
+
         -- USER
         SignIn ->
             if String.length model.inputPassword >= 8 then
@@ -179,6 +207,9 @@ updateFromBackend msg model =
 
         SendMessage message ->
             ( { model | message = message }, Cmd.none )
+
+        GotDataFile dataFile ->
+            ( { model | dataFile = Just dataFile }, Cmd.none )
 
 
 view : Model -> { title : String, body : List (Html.Html FrontendMsg) }

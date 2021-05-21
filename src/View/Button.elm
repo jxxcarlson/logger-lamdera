@@ -3,6 +3,7 @@ module View.Button exposing
     , getUsers
     , linkTemplate
     , runTask
+    , saveItem
     , setEndTime
     , setStartTime
     , signIn
@@ -108,3 +109,7 @@ setStartTime =
 
 setEndTime =
     buttonTemplate [] SetEndTime "End"
+
+
+saveItem =
+    buttonTemplate [ E.width (E.px 100) ] SaveItem "Save"

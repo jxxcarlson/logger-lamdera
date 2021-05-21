@@ -1,6 +1,7 @@
 module View.Main exposing (view)
 
 import Calendar
+import Data.Data as Data
 import DateTime exposing (DateTime)
 import DateTimeUtility
 import Element as E exposing (Element)
@@ -32,7 +33,7 @@ mainColumn : Model -> Element FrontendMsg
 mainColumn model =
     E.column (mainColumnStyle model)
         [ E.column [ E.spacing 12, E.width (E.px <| appWidth_ model), E.height (E.px (appHeight_ model)) ]
-            [ title "App"
+            [ viewTitle model
             , header model
             , body model
             , footer model
@@ -40,13 +41,39 @@ mainColumn model =
         ]
 
 
+viewTitle model =
+    case model.dataFile of
+        Nothing ->
+            E.el [ Font.color Color.white ] (E.text "Welcome to Logger")
+
+        Just dataFile ->
+            E.el [ Font.color Color.white ] (E.text <| dataFile.name)
+
+
 body model =
-    E.row [ E.spacing 36, Font.size 16, Font.color Color.white ]
-        [ Button.setStartTime
-        , Button.setEndTime
-        , viewStartTime model
-        , viewEndTime model
-        , viewElapsedTime model
+    E.column [ E.spacing 12, E.width (E.px <| appWidth_ model) ]
+        [ E.row [ E.spacing 36, Font.size 16, Font.color Color.white ]
+            [ Button.setStartTime
+            , Button.setEndTime
+            , viewStartTime model
+            , viewEndTime model
+            , viewElapsedTime model
+            ]
+        , E.row [ E.spacing 8 ] [ Button.saveItem, View.Input.descriptionInput model ]
+        , case model.dataFile of
+            Nothing ->
+                E.el [ Font.color Color.white, Font.size 16 ] (E.text "Sorry, no data file")
+
+            Just dataFile ->
+                E.column
+                    [ E.spacing 8
+                    , E.paddingXY 12 12
+                    , E.height (E.px (model.windowHeight - 300))
+                    , E.width (E.px (model.windowWidth - 132))
+                    , Background.color Color.paleBlue
+                    , Font.size 16
+                    ]
+                    (List.map (Data.view model.zone) dataFile.data)
         ]
 
 
@@ -90,7 +117,7 @@ footer model =
         [ E.spacing 12
         , E.paddingXY 0 8
         , E.height (E.px 25)
-        , E.width (E.px (2 * panelWidth_ model + 246))
+        , E.width (E.px <| appWidth_ model)
         , Font.size 14
         , E.inFront (View.Popup.admin model)
         ]

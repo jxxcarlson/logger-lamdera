@@ -64,7 +64,7 @@ lightBlue =
 
 paleBlue : E.Color
 paleBlue =
-    E.rgb255 180 180 255
+    E.rgb255 200 200 240
 
 
 veryPaleBlue : E.Color
