@@ -203,7 +203,7 @@ viewHourlyRate model =
             E.none
 
         Just rate ->
-            E.el [ Font.color Color.paleBlue ] (E.text <| String.fromFloat <| rate * model.totalValue)
+            E.el [ Font.color Color.paleBlue ] (E.text <| String.fromFloat <| Utility.roundTo 2 <| rate * (model.totalValue / 3600.0))
 
 
 messageRow model =
