@@ -66,12 +66,13 @@ updateFromFrontend sessionId clientId msg model =
 
         -- ADMIN
         RunTask ->
-            case Data.Manager.setupLog model.time "jxxcarlson" "Work Log" TTask model.authenticationDict model.dataDict of
-                Err errs ->
-                    ( model, sendToFrontend clientId (SendMessage errs) )
-
-                Ok dataDict ->
-                    ( { model | dataDict = dataDict }, sendToFrontend clientId (SendMessage ("New log set up: " ++ "Work Log")) )
+            --case Data.Manager.setupLog_ model.time "jxxcarlson" "Work Log" TTask model.authenticationDict model.dataDict of
+            --    Err errs ->
+            --        ( model, sendToFrontend clientId (SendMessage errs) )
+            --
+            --    Ok dataDict ->
+            --        ( { model | dataDict = dataDict }, sendToFrontend clientId (SendMessage ("New log set up: " ++ "Work Log")) )
+            ( model, sendToFrontend clientId (SendMessage "No task to run") )
 
         SendUsers ->
             ( model, sendToFrontend clientId (GotUsers (Authentication.users model.authenticationDict)) )

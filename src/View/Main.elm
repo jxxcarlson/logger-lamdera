@@ -51,7 +51,10 @@ viewTitle model =
 
 body model =
     E.column [ E.spacing 24, E.width (E.px <| appWidth_ model) ]
-        [ logItem_ model
+        [ E.column [ E.spacing 8 ]
+            [ logItem_ model
+            , View.Utility.showIf (model.currentUser /= Nothing) (messageRow model)
+            ]
         , case model.dataFile of
             Nothing ->
                 E.column
@@ -138,7 +141,6 @@ footer model =
         ]
         [ Button.adminPopup model
         , View.Utility.showIfIsAdmin model Button.runTask
-        , messageRow model
         ]
 
 
@@ -147,8 +149,9 @@ messageRow model =
         [ E.width E.fill
         , E.height (E.px 30)
         , E.paddingXY 8 4
-        , View.Style.bgGray 0.1
-        , View.Style.fgGray 1.0
+        , View.Style.bgGray 0.225
+        , View.Style.fgGray 0.85
+        , Font.size 16
         ]
         [ E.text model.message ]
 

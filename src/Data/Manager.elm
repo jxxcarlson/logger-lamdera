@@ -16,8 +16,13 @@ type alias DatafileName =
     String
 
 
-setupLog : Time.Posix -> UserName -> DatafileName -> DataType -> AuthenticationDict -> DataDict -> Result String DataDict
+setupLog : Time.Posix -> UserName -> DatafileName -> DataType -> AuthenticationDict -> DataDict -> DataDict
 setupLog time userName datafileName dataType authDict dataDict =
+    Data.Data.insertDataFile time userName datafileName dataType dataDict
+
+
+setupLog_ : Time.Posix -> UserName -> DatafileName -> DataType -> AuthenticationDict -> DataDict -> Result String DataDict
+setupLog_ time userName datafileName dataType authDict dataDict =
     if Dict.get userName authDict == Nothing then
         Err "User name is not registered"
 

@@ -74,16 +74,21 @@ type alias DataDict =
     Dict ( Username, DataFileName ) DataFile
 
 
+newDataFile : Time.Posix -> Username -> DataFileName -> DataType -> DataFile
+newDataFile time username dataFileName dataType =
+    { name = dataFileName
+    , owner = username
+    , dataType = dataType
+    , data = []
+    , timeCreated = time
+    , timeModified = time
+    }
+
+
 insertDataFile : Time.Posix -> Username -> DataFileName -> DataType -> DataDict -> DataDict
 insertDataFile time username dataFileName dataType dataDict =
     Dict.insert ( username, dataFileName )
-        { name = dataFileName
-        , owner = username
-        , dataType = dataType
-        , data = []
-        , timeCreated = time
-        , timeModified = time
-        }
+        (newDataFile time username dataFileName dataType)
         dataDict
 
 

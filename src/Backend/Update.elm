@@ -4,6 +4,8 @@ module Backend.Update exposing
     )
 
 import Authentication
+import Data.Data exposing (DataType(..))
+import Data.Manager
 import Lamdera exposing (ClientId, broadcast, sendToFrontend)
 import Random
 import Token
@@ -61,10 +63,17 @@ setupUser model clientId username encryptedPassword =
 
         newAuthDict =
             Authentication.insert user encryptedPassword model.authenticationDict
+
+        newDataFile =
+            Data.Data.newDataFile model.time username "Work Log" TTask
+
+        newDataDict =
+            Data.Manager.setupLog model.time username "Work Log" TTask newAuthDict model.dataDict
     in
-    ( { model | randomSeed = tokenData.seed, authenticationDict = newAuthDict }
+    ( { model | randomSeed = tokenData.seed, authenticationDict = newAuthDict, dataDict = newDataDict }
     , Cmd.batch
-        [ sendToFrontend clientId (SendMessage "Success! You have set up your account")
-        , sendToFrontend clientId (SendUser user)
+        [ sendToFrontend clientId (SendUser user)
+        , sendToFrontend clientId (SendMessage "We have set up your new account and Work Log")
+        , sendToFrontend clientId (GotDataFile newDataFile)
         ]
     )
