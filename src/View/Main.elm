@@ -76,7 +76,7 @@ body model =
                     , Background.color Color.paleBlue
                     , Font.size 16
                     ]
-                    (List.map (Data.view model.zone) dataFile.data)
+                    (List.map (Data.view model.zone) (Data.filterData model.jobFilter model.taskFilter model.sinceDayFilter dataFile.data))
         ]
 
 
@@ -95,6 +95,7 @@ logItem model =
         , E.row [ E.spacing 8, E.paddingEach { left = 48, right = 0, top = 0, bottom = 0 } ]
             [ View.Input.filterJobInput model
             , View.Input.filterTaskInput model
+            , View.Input.sinceDayInput model
             ]
         ]
 

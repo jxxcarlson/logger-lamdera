@@ -60,6 +60,7 @@ init url key =
       , job = ""
       , jobFilter = ""
       , taskFilter = ""
+      , sinceDayFilter = ""
 
       -- UI
       , windowWidth = 600
@@ -137,6 +138,9 @@ update msg model =
         InputTaskFilter str ->
             ( { model | taskFilter = str }, Cmd.none )
 
+        InputSinceDayFilter str ->
+            ( { model | sinceDayFilter = str }, Cmd.none )
+
         SetStartTime ->
             ( { model | startTime = Just model.time }, Cmd.none )
 
@@ -193,6 +197,9 @@ update msg model =
                 , inputPassword = ""
                 , job = ""
                 , description = ""
+                , jobFilter = ""
+                , sinceDayFilter = ""
+                , taskFilter = ""
               }
             , Cmd.none
             )

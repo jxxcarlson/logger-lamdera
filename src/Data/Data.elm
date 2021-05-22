@@ -19,6 +19,36 @@ type Data
     | Quantity { start : Time.Posix, end : Time.Posix, value : Float, desc : String }
 
 
+getJob : Data -> String
+getJob datum =
+    case datum of
+        Task { start, end, desc, job } ->
+            job
+
+        Quantity _ ->
+            ""
+
+
+getDesc : Data -> String
+getDesc datum =
+    case datum of
+        Task { start, end, desc, job } ->
+            desc
+
+        Quantity { start, end, desc, value } ->
+            desc
+
+
+getEndTime : Data -> Int
+getEndTime datum =
+    case datum of
+        Task { start, end, desc, job } ->
+            Time.posixToMillis end
+
+        Quantity { start, end, desc, value } ->
+            Time.posixToMillis end
+
+
 view : Time.Zone -> Data -> Element msg
 view zone data =
     case data of
@@ -53,6 +83,47 @@ type alias DataFile =
     , timeCreated : Time.Posix
     , timeModified : Time.Posix
     }
+
+
+filterData1 : String -> String -> List Data -> List Data
+filterData1 jobFragment taskFragment data =
+    data
+        |> List.filter (\datum -> String.contains jobFragment (getJob datum))
+        |> List.filter (\datum -> String.contains taskFragment (getDesc datum))
+
+
+filterData : String -> String -> String -> List Data -> List Data
+filterData jobFragment taskFragment earliestDateAsString data =
+    let
+        earliestTime : Int
+        earliestTime =
+            DateTimeUtility.millisecondsFromDateString earliestDateAsString
+    in
+    data
+        |> filterIf (jobFragment /= "") (\datum -> String.contains jobFragment (getJob datum))
+        |> filterIf (taskFragment /= "") (\datum -> String.contains taskFragment (getDesc datum))
+        |> filterIf (earliestTime > 0) (\datum -> earliestTime < getEndTime datum)
+
+
+filterIf : Bool -> (b -> Bool) -> List b -> List b
+filterIf condition predicate list =
+    if condition then
+        List.filter predicate list
+
+    else
+        list
+
+
+{-| If the test succeeds, return `transform a`, otherwise
+return `a`.
+-}
+ifApply : (a -> Bool) -> (a -> a) -> a -> a
+ifApply test transform a =
+    if test a then
+        transform a
+
+    else
+        a
 
 
 {-|

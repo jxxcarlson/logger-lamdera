@@ -32,6 +32,7 @@ type alias FrontendModel =
     , job : String
     , jobFilter : String
     , taskFilter : String
+    , sinceDayFilter : String
     , dataFile : Maybe DataFile
 
     -- USER
@@ -87,6 +88,7 @@ type FrontendMsg
     | InputJob String
     | InputJobFilter String
     | InputTaskFilter String
+    | InputSinceDayFilter String
     | SetStartTime
     | SetEndTime
     | SaveItem

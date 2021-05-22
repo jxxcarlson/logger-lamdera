@@ -4,18 +4,21 @@ module View.Input exposing
     , filterTaskInput
     , jobInput
     , passwordInput
+    , sinceDayInput
     , usernameInput
     )
 
 import Element as E exposing (Element, px)
+import Element.Background as Background
 import Element.Font as Font
 import Element.Input as Input
 import Types exposing (FrontendModel, FrontendMsg(..))
+import View.Color as Color
 
 
 inputFieldTemplate : E.Length -> String -> (String -> msg) -> String -> Element msg
 inputFieldTemplate width_ default msg text =
-    Input.text [ E.moveUp 5, Font.size 16, E.height (px 33), E.width width_ ]
+    Input.text [ E.moveUp 5, Background.color Color.paleBlue, Font.color (Color.gray 0.1), Font.size 16, E.height (px 33), E.width width_ ]
         { onChange = msg
         , text = text
         , label = Input.labelHidden default
@@ -72,3 +75,7 @@ filterJobInput model =
 
 filterTaskInput model =
     inputFieldTemplate (E.px 200) "Filter tasks" InputTaskFilter model.taskFilter
+
+
+sinceDayInput model =
+    inputFieldTemplate (E.px 200) "Since 12/31" InputSinceDayFilter model.sinceDayFilter
