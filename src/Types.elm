@@ -30,6 +30,8 @@ type alias FrontendModel =
     , endTime : Maybe Time.Posix
     , description : String
     , job : String
+    , totalValue : Float
+    , hourlyRate : String
     , jobFilter : String
     , taskFilter : String
     , sinceDayFilter : String
@@ -90,6 +92,7 @@ type FrontendMsg
     | InputJobFilter String
     | InputTaskFilter String
     | InputSinceDayFilter String
+    | InputHourlyRate String
     | SetStartTime
     | SetEndTime
     | SaveItem

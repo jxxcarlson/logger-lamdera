@@ -192,7 +192,18 @@ footer model =
         [ Button.adminPopup model
         , View.Utility.showIfIsAdmin model Button.runTask
         , Button.exportCSV
+        , View.Utility.showIfIsAdmin model (View.Input.hourlyRateInput model)
+        , View.Utility.showIfIsAdmin model (viewHourlyRate model)
         ]
+
+
+viewHourlyRate model =
+    case String.toFloat model.hourlyRate of
+        Nothing ->
+            E.none
+
+        Just rate ->
+            E.el [ Font.color Color.paleBlue ] (E.text <| String.fromFloat <| rate * model.totalValue)
 
 
 messageRow model =

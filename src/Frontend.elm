@@ -60,6 +60,8 @@ init url key =
       , dataFile = Nothing
       , filteredData = []
       , job = ""
+      , totalValue = 0
+      , hourlyRate = ""
       , jobFilter = ""
       , taskFilter = ""
       , sinceDayFilter = ""
@@ -135,28 +137,55 @@ update msg model =
             ( { model | job = str }, Cmd.none )
 
         InputJobFilter str ->
+            let
+                filteredData =
+                    filterData model
+
+                total =
+                    Data.totalValue filteredData
+            in
             ( { model
                 | jobFilter = str
                 , filteredData = filterData model
+                , totalValue = total
               }
             , Cmd.none
             )
 
         InputTaskFilter str ->
+            let
+                filteredData =
+                    filterData model
+
+                total =
+                    Data.totalValue filteredData
+            in
             ( { model
                 | taskFilter = str
-                , filteredData = filterData model
+                , totalValue = total
+                , filteredData = filteredData
               }
             , Cmd.none
             )
 
         InputSinceDayFilter str ->
+            let
+                filteredData =
+                    filterData model
+
+                total =
+                    Data.totalValue filteredData
+            in
             ( { model
                 | sinceDayFilter = str
-                , filteredData = filterData model
+                , filteredData = filteredData
+                , totalValue = total
               }
             , Cmd.none
             )
+
+        InputHourlyRate str ->
+            ( { model | hourlyRate = str }, Cmd.none )
 
         SetStartTime ->
             ( { model | startTime = Just model.time }, Cmd.none )

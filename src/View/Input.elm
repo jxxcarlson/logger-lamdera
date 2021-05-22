@@ -2,6 +2,7 @@ module View.Input exposing
     ( descriptionInput
     , filterJobInput
     , filterTaskInput
+    , hourlyRateInput
     , jobInput
     , passwordInput
     , sinceDayInput
@@ -79,3 +80,7 @@ filterTaskInput model =
 
 sinceDayInput model =
     inputFieldTemplate (E.px 200) "Filter since mm/dd" InputSinceDayFilter model.sinceDayFilter
+
+
+hourlyRateInput model =
+    inputFieldTemplate (E.px 110) "Hourly rate" InputHourlyRate model.hourlyRate

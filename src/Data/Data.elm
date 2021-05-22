@@ -1,4 +1,18 @@
-module Data.Data exposing (..)
+module Data.Data exposing
+    ( Data(..)
+    , DataDict
+    , DataFile
+    , DataType(..)
+    , filterData
+    , heading
+    , insertDataFile
+    , insertDatum
+    , insertDatum_
+    , newDataFile
+    , saveLog
+    , totalValue
+    , view
+    )
 
 import DateTimeUtility
 import Dict exposing (Dict)
@@ -166,10 +180,6 @@ filterData1 jobFragment taskFragment data =
 filterData : Time.Posix -> String -> String -> String -> List Data -> List Data
 filterData posix jobFragment taskFragment earliestDateAsString data =
     let
-        earliestTime2 : Int
-        earliestTime2 =
-            DateTimeUtility.millisecondsFromDateString earliestDateAsString
-
         earliestTime : Int
         earliestTime =
             DateTimeUtility.millisecondsFromDateString (earliestDateAsString ++ "/" ++ String.fromInt (DateTimeUtility.yearFromPosix posix))
@@ -177,7 +187,7 @@ filterData posix jobFragment taskFragment earliestDateAsString data =
     data
         |> filterIf (jobFragment /= "") (\datum -> String.contains jobFragment (getJob datum))
         |> filterIf (taskFragment /= "") (\datum -> String.contains taskFragment (getDesc datum))
-        |> filterIf (earliestTime > 0) (\datum -> earliestTime < getEndTime datum)
+        |> filterIf (earliestTime > 0) (\datum -> earliestTime <= getEndTime datum)
 
 
 filterIf : Bool -> (b -> Bool) -> List b -> List b
