@@ -272,4 +272,4 @@ filterData model =
             []
 
         Just theData ->
-            Data.filterData model.jobFilter model.taskFilter model.sinceDayFilter theData.data
+            Data.filterData model.time model.jobFilter model.taskFilter model.sinceDayFilter theData.data

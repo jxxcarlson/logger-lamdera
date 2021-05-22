@@ -163,12 +163,16 @@ filterData1 jobFragment taskFragment data =
         |> List.filter (\datum -> String.contains taskFragment (getDesc datum))
 
 
-filterData : String -> String -> String -> List Data -> List Data
-filterData jobFragment taskFragment earliestDateAsString data =
+filterData : Time.Posix -> String -> String -> String -> List Data -> List Data
+filterData posix jobFragment taskFragment earliestDateAsString data =
     let
+        earliestTime2 : Int
+        earliestTime2 =
+            DateTimeUtility.millisecondsFromDateString earliestDateAsString
+
         earliestTime : Int
         earliestTime =
-            DateTimeUtility.millisecondsFromDateString earliestDateAsString
+            DateTimeUtility.millisecondsFromDateString (earliestDateAsString ++ "/" ++ String.fromInt (DateTimeUtility.yearFromPosix posix))
     in
     data
         |> filterIf (jobFragment /= "") (\datum -> String.contains jobFragment (getJob datum))

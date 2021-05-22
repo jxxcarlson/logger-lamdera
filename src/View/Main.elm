@@ -91,7 +91,7 @@ viewData_ model =
                 , Background.color Color.paleBlue
                 , Font.size 16
                 ]
-                (List.map (Data.view model.zone) (Data.filterData model.jobFilter model.taskFilter model.sinceDayFilter dataFile.data))
+                (List.map (Data.view model.zone) (Data.filterData model.time model.jobFilter model.taskFilter model.sinceDayFilter dataFile.data))
 
 
 logItem_ model =

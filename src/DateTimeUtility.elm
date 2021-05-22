@@ -4,6 +4,7 @@ module DateTimeUtility exposing
     , elapsedTimeAsSeconds
     , elapsedTimeAsString
     , millisecondsFromDateString
+    , yearFromPosix
     , zonedDateString
     , zonedDateTime
     , zonedTimeString
@@ -19,6 +20,11 @@ import Time exposing (Month(..))
 
 type alias Seconds =
     Int
+
+
+yearFromPosix : Time.Posix -> Int
+yearFromPosix posix =
+    posix |> Calendar.fromPosix |> Calendar.getYear
 
 
 millisecondsFromDateString : String -> Int
