@@ -246,7 +246,7 @@ updateFromBackend msg model =
             ( { model | message = message }, Cmd.none )
 
         GotDataFile dataFile ->
-            ( { model | dataFile = Just dataFile }, Cmd.none )
+            ( { model | dataFile = Just dataFile, filteredData = dataFile.data }, Cmd.none )
 
 
 view : Model -> { title : String, body : List (Html.Html FrontendMsg) }

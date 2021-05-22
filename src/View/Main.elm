@@ -10,6 +10,7 @@ import Element.Font as Font
 import Html exposing (Html)
 import Time
 import Types exposing (..)
+import Utility
 import View.Button as Button
 import View.Color as Color
 import View.Input
@@ -161,7 +162,7 @@ summary model =
         , Background.color Color.lessPaleBlue
         , E.paddingXY 8 8
         ]
-        [ E.el [] (E.text <| "Total hours: " ++ String.fromFloat (Data.totalValue model.filteredData / 3600.0)) ]
+        [ E.el [] (E.text <| "Total hours: " ++ String.fromFloat (Utility.roundTo 2 <| Data.totalValue model.filteredData / 3600.0)) ]
 
 
 footer model =
