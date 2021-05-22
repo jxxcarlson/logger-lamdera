@@ -19,6 +19,21 @@ type Data
     | Quantity { start : Time.Posix, end : Time.Posix, value : Float, desc : String }
 
 
+type DataType
+    = TTask
+    | TQuantity
+
+
+type alias DataFile =
+    { name : DataFileName
+    , owner : Username
+    , dataType : DataType
+    , data : List Data
+    , timeCreated : Time.Posix
+    , timeModified : Time.Posix
+    }
+
+
 getValue : Data -> Float
 getValue data =
     case data of
@@ -64,6 +79,32 @@ getEndTime datum =
             Time.posixToMillis end
 
 
+heading : DataType -> Element msg
+heading dataType =
+    let
+        nudge =
+            E.moveRight 4
+    in
+    case dataType of
+        TTask ->
+            E.row [ E.spacing 8 ]
+                [ E.el [ E.width (E.px 100), nudge ] (E.text "Job")
+                , E.el [ E.width (E.px 100), nudge ] (E.text <| "Date")
+                , E.el [ E.width (E.px 50), nudge ] (E.text <| "Start")
+                , E.el [ E.width (E.px 44), nudge ] (E.text <| "End")
+                , E.el [ E.width (E.px 70), nudge ] (E.text <| "Elapsed")
+                , E.el [ E.width (E.px 500), nudge ] (E.text <| "Description")
+                ]
+
+        TQuantity ->
+            E.row [ E.spacing 8 ]
+                [ E.el [ E.width (E.px 100), nudge ] (E.text <| "Start")
+                , E.el [ E.width (E.px 100), nudge ] (E.text <| "End")
+                , E.el [ E.width (E.px 100), nudge ] (E.text <| "Value")
+                , E.el [ E.width (E.px 500), nudge ] (E.text <| "Description")
+                ]
+
+
 view : Time.Zone -> Data -> Element msg
 view zone data =
     case data of
@@ -73,7 +114,7 @@ view zone data =
                 , E.el [ E.width (E.px 100) ] (E.text <| DateTimeUtility.zonedDateString zone end)
                 , E.el [ E.width (E.px 50) ] (E.text <| DateTimeUtility.zonedTimeString zone start)
                 , E.el [ E.width (E.px 44) ] (E.text <| DateTimeUtility.zonedTimeString zone end)
-                , E.el [ E.width (E.px 44) ] (E.text <| DateTimeUtility.elapsedTimeAsString start end)
+                , E.el [ E.width (E.px 70) ] (E.text <| DateTimeUtility.elapsedTimeAsString start end)
                 , E.el [ E.width (E.px 500) ] (E.text <| desc)
                 ]
 
@@ -84,21 +125,6 @@ view zone data =
                 , E.el [ E.width (E.px 100) ] (E.text <| String.fromFloat value)
                 , E.el [ E.width (E.px 500) ] (E.text <| desc)
                 ]
-
-
-type DataType
-    = TTask
-    | TQuantity
-
-
-type alias DataFile =
-    { name : DataFileName
-    , owner : Username
-    , dataType : DataType
-    , data : List Data
-    , timeCreated : Time.Posix
-    , timeModified : Time.Posix
-    }
 
 
 filterData1 : String -> String -> List Data -> List Data

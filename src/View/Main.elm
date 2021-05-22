@@ -62,7 +62,8 @@ body model =
 
 viewData model =
     E.column [ E.spacing 8 ]
-        [ viewData_ model
+        [ dataHeader model
+        , viewData_ model
         , summary model
         ]
 
@@ -152,6 +153,20 @@ viewElapsedTime model =
             E.none
 
 
+dataHeader model =
+    E.row
+        [ E.spacing 12
+        , E.paddingXY 0 8
+        , E.height (E.px 30)
+        , E.width (E.px <| appWidth_ model - 89)
+        , Font.size 14
+        , Background.color Color.paleBlue
+        , E.paddingXY 8 8
+        , Font.bold
+        ]
+        [ Data.heading Data.TTask ]
+
+
 summary model =
     E.row
         [ E.spacing 12
@@ -159,10 +174,10 @@ summary model =
         , E.height (E.px 30)
         , E.width (E.px <| appWidth_ model - 89)
         , Font.size 14
-        , Background.color Color.lessPaleBlue
+        , Background.color Color.paleBlue
         , E.paddingXY 8 8
         ]
-        [ E.el [] (E.text <| "Total hours: " ++ String.fromFloat (Utility.roundTo 2 <| Data.totalValue model.filteredData / 3600.0)) ]
+        [ E.el [ Font.bold ] (E.text <| "Total hours: " ++ String.fromFloat (Utility.roundTo 2 <| Data.totalValue model.filteredData / 3600.0)) ]
 
 
 footer model =
