@@ -1,5 +1,6 @@
 module DateTimeUtility exposing
     ( dateFromString
+    , elapsedTimeAsMinutes
     , elapsedTimeAsSeconds
     , elapsedTimeAsString
     , millisecondsFromDateString
@@ -115,6 +116,11 @@ elapsedTimeAsSeconds a b =
             Time.posixToMillis b
     in
     (bb - aa) // 1000
+
+
+elapsedTimeAsMinutes : Time.Posix -> Time.Posix -> Float
+elapsedTimeAsMinutes a b =
+    toFloat (elapsedTimeAsSeconds a b) / 60.0
 
 
 zonedDateString : Time.Zone -> Time.Posix -> String

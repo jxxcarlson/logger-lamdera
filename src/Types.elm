@@ -34,6 +34,7 @@ type alias FrontendModel =
     , taskFilter : String
     , sinceDayFilter : String
     , dataFile : Maybe DataFile
+    , filteredData : List Data
 
     -- USER
     , currentUser : Maybe User

@@ -78,4 +78,4 @@ filterTaskInput model =
 
 
 sinceDayInput model =
-    inputFieldTemplate (E.px 200) "Since 12/31" InputSinceDayFilter model.sinceDayFilter
+    inputFieldTemplate (E.px 200) "Filter since mm/dd" InputSinceDayFilter model.sinceDayFilter

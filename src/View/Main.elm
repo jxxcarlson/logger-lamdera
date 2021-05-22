@@ -55,29 +55,41 @@ body model =
             [ logItem_ model
             , View.Utility.showIf (model.currentUser /= Nothing) (messageRow model)
             ]
-        , case model.dataFile of
-            Nothing ->
-                E.column
-                    [ E.spacing 8
-                    , E.paddingXY 12 12
-                    , E.height (E.px (model.windowHeight - 430))
-                    , E.width (E.px (model.windowWidth - 232))
-                    , Background.color Color.paleBlue
-                    , Font.size 16
-                    ]
-                    [ E.text "Sorry, no data file" ]
-
-            Just dataFile ->
-                E.column
-                    [ E.spacing 8
-                    , E.paddingXY 12 12
-                    , E.height (E.px (model.windowHeight - 430))
-                    , E.width (E.px (model.windowWidth - 232))
-                    , Background.color Color.paleBlue
-                    , Font.size 16
-                    ]
-                    (List.map (Data.view model.zone) (Data.filterData model.jobFilter model.taskFilter model.sinceDayFilter dataFile.data))
+        , viewData model
         ]
+
+
+viewData model =
+    E.column [ E.spacing 8 ]
+        [ viewData_ model
+        , summary model
+        ]
+
+
+viewData_ model =
+    case model.dataFile of
+        Nothing ->
+            E.column
+                [ E.spacing 8
+                , E.paddingXY 12 12
+                , E.height (E.px (model.windowHeight - 430))
+                , E.width (E.px (model.windowWidth - 232))
+                , Background.color Color.paleBlue
+                , Font.size 16
+                , E.scrollbarY
+                ]
+                [ E.text "Sorry, no data file" ]
+
+        Just dataFile ->
+            E.column
+                [ E.spacing 8
+                , E.paddingXY 12 12
+                , E.height (E.px (model.windowHeight - 430))
+                , E.width (E.px (model.windowWidth - 232))
+                , Background.color Color.paleBlue
+                , Font.size 16
+                ]
+                (List.map (Data.view model.zone) (Data.filterData model.jobFilter model.taskFilter model.sinceDayFilter dataFile.data))
 
 
 logItem_ model =
@@ -139,6 +151,19 @@ viewElapsedTime model =
             E.none
 
 
+summary model =
+    E.row
+        [ E.spacing 12
+        , E.paddingXY 0 8
+        , E.height (E.px 30)
+        , E.width (E.px <| appWidth_ model - 89)
+        , Font.size 14
+        , Background.color Color.lessPaleBlue
+        , E.paddingXY 8 8
+        ]
+        [ E.el [] (E.text <| "Total hours: " ++ String.fromFloat (Data.totalValue model.filteredData)) ]
+
+
 footer model =
     E.row
         [ E.spacing 12
@@ -158,8 +183,8 @@ messageRow model =
         [ E.width E.fill
         , E.height (E.px 30)
         , E.paddingXY 8 4
-        , View.Style.bgGray 0.225
-        , View.Style.fgGray 0.85
+        , View.Style.bgGray 0.21
+        , Font.color Color.paleBlue -- View.Style.fgGray 0.8
         , Font.size 16
         ]
         [ E.text model.message ]

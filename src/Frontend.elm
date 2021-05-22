@@ -57,6 +57,7 @@ init url key =
       , endTime = Nothing
       , description = ""
       , dataFile = Nothing
+      , filteredData = []
       , job = ""
       , jobFilter = ""
       , taskFilter = ""
@@ -133,13 +134,28 @@ update msg model =
             ( { model | job = str }, Cmd.none )
 
         InputJobFilter str ->
-            ( { model | jobFilter = str }, Cmd.none )
+            ( { model
+                | jobFilter = str
+                , filteredData = filterData model
+              }
+            , Cmd.none
+            )
 
         InputTaskFilter str ->
-            ( { model | taskFilter = str }, Cmd.none )
+            ( { model
+                | taskFilter = str
+                , filteredData = filterData model
+              }
+            , Cmd.none
+            )
 
         InputSinceDayFilter str ->
-            ( { model | sinceDayFilter = str }, Cmd.none )
+            ( { model
+                | sinceDayFilter = str
+                , filteredData = filterData model
+              }
+            , Cmd.none
+            )
 
         SetStartTime ->
             ( { model | startTime = Just model.time }, Cmd.none )
@@ -239,3 +255,17 @@ view model =
     , body =
         [ View.Main.view model ]
     }
+
+
+
+-- HELPERS
+
+
+filterData : Model -> List Data.Data
+filterData model =
+    case model.dataFile of
+        Nothing ->
+            []
+
+        Just theData ->
+            Data.filterData model.jobFilter model.taskFilter model.sinceDayFilter theData.data

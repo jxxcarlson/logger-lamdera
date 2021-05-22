@@ -19,6 +19,21 @@ type Data
     | Quantity { start : Time.Posix, end : Time.Posix, value : Float, desc : String }
 
 
+getValue : Data -> Float
+getValue data =
+    case data of
+        Task { start, end, desc, job } ->
+            toFloat <| DateTimeUtility.elapsedTimeAsSeconds start end
+
+        Quantity { start, end, desc, value } ->
+            value
+
+
+totalValue : List Data -> Float
+totalValue dataList =
+    dataList |> List.map getValue |> List.sum
+
+
 getJob : Data -> String
 getJob datum =
     case datum of
