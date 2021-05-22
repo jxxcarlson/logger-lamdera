@@ -5,6 +5,7 @@ import Browser exposing (UrlRequest(..))
 import Browser.Events
 import Browser.Navigation as Nav
 import Data.Data as Data
+import File.Download as Download
 import Frontend.Cmd
 import Frontend.Update
 import Html exposing (Html)
@@ -188,6 +189,9 @@ update msg model =
 
                 ( _, _ ) ->
                     ( { model | message = "Sorry, no user signed in!" }, Cmd.none )
+
+        ExportCSV ->
+            ( { model | message = "Exporting log to CSV ..." }, Data.saveLog model.zone model.filteredData )
 
         -- USER
         SignIn ->

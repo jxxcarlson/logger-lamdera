@@ -1,5 +1,6 @@
 module View.Button exposing
     ( adminPopup
+    , exportCSV
     , getUsers
     , linkTemplate
     , runTask
@@ -113,3 +114,7 @@ setEndTime =
 
 saveItem =
     buttonTemplate [ E.width (E.px 100) ] SaveItem "Save"
+
+
+exportCSV =
+    buttonTemplate [ E.width (E.px 120) ] ExportCSV "Export to CSV"

@@ -93,6 +93,7 @@ type FrontendMsg
     | SetStartTime
     | SetEndTime
     | SaveItem
+    | ExportCSV
       -- USER
     | SignIn
     | SignOut

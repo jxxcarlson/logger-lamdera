@@ -191,6 +191,7 @@ footer model =
         ]
         [ Button.adminPopup model
         , View.Utility.showIfIsAdmin model Button.runTask
+        , Button.exportCSV
         ]
 
 

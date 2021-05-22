@@ -3,6 +3,7 @@ module Data.Data exposing (..)
 import DateTimeUtility
 import Dict exposing (Dict)
 import Element as E exposing (Element)
+import File.Download as Download
 import Time
 
 
@@ -32,6 +33,34 @@ type alias DataFile =
     , timeCreated : Time.Posix
     , timeModified : Time.Posix
     }
+
+
+saveLog : Time.Zone -> List Data -> Cmd msg
+saveLog zone dataList =
+    Download.string "log.csv" "text/csv" (exportData zone dataList)
+
+
+exportData : Time.Zone -> List Data -> String
+exportData zone dataList =
+    List.map (exportDatum zone) dataList |> String.join "\n"
+
+
+exportDatum : Time.Zone -> Data -> String
+exportDatum zone datum =
+    case datum of
+        Task { start, end, desc, job } ->
+            [ DateTimeUtility.zonedDateString zone end
+            , DateTimeUtility.elapsedTimeAsString start end
+            , String.replace "," ";" desc
+            ]
+                |> String.join ","
+
+        Quantity { start, end, desc, value } ->
+            [ DateTimeUtility.zonedDateString zone end
+            , String.fromFloat value
+            , String.replace "," ";" desc
+            ]
+                |> String.join ","
 
 
 getValue : Data -> Float
