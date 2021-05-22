@@ -30,6 +30,8 @@ type alias FrontendModel =
     , endTime : Maybe Time.Posix
     , description : String
     , job : String
+    , jobFilter : String
+    , taskFilter : String
     , dataFile : Maybe DataFile
 
     -- USER
@@ -83,6 +85,8 @@ type FrontendMsg
     | InputEndTime String
     | InputDescription String
     | InputJob String
+    | InputJobFilter String
+    | InputTaskFilter String
     | SetStartTime
     | SetEndTime
     | SaveItem

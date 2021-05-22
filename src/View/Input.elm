@@ -1,4 +1,11 @@
-module View.Input exposing (descriptionInput, jobInput, passwordInput, usernameInput)
+module View.Input exposing
+    ( descriptionInput
+    , filterJobInput
+    , filterTaskInput
+    , jobInput
+    , passwordInput
+    , usernameInput
+    )
 
 import Element as E exposing (Element, px)
 import Element.Font as Font
@@ -57,3 +64,11 @@ descriptionInput model =
 
 jobInput model =
     inputFieldTemplate (E.px 100) "Job" InputJob model.job
+
+
+filterJobInput model =
+    inputFieldTemplate (E.px 100) "Filter jobs" InputJobFilter model.jobFilter
+
+
+filterTaskInput model =
+    inputFieldTemplate (E.px 200) "Filter tasks" InputTaskFilter model.taskFilter

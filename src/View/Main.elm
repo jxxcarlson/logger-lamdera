@@ -92,6 +92,10 @@ logItem model =
         [ E.row [ E.spacing 8 ] [ Button.setStartTime, viewStartTime model ]
         , E.row [ E.spacing 8 ] [ Button.setEndTime, viewEndTime model ]
         , viewElapsedTime model
+        , E.row [ E.spacing 8, E.paddingEach { left = 48, right = 0, top = 0, bottom = 0 } ]
+            [ View.Input.filterJobInput model
+            , View.Input.filterTaskInput model
+            ]
         ]
 
 
@@ -199,56 +203,8 @@ viewTime zone time =
         (E.text <| DateTimeUtility.zonedDateString zone time)
 
 
-docsInfo model n =
-    let
-        total =
-            List.length model.documents
-    in
-    E.el
-        [ E.height (E.px 30)
-        , E.width (E.px docListWidth)
-        , Font.size 16
-        , E.paddingXY 12 7
-        , Background.color Color.paleViolet
-        , Font.color Color.lightBlue
-        ]
-        (E.text <| "filtered/fetched = " ++ String.fromInt n ++ "/" ++ String.fromInt total)
-
-
-docList_ : Model -> List (Element FrontendMsg) -> Element FrontendMsg
-docList_ model filteredDocs =
-    E.column
-        [ View.Style.bgGray 0.85
-        , E.height (E.px (panelHeight_ model - searchDocPaneHeight))
-        , E.spacing 4
-        , E.width (E.px docListWidth)
-        , E.paddingXY 8 12
-        , Background.color Color.paleViolet
-        , E.scrollbarY
-        ]
-        filteredDocs
-
-
-viewDummy : Model -> Element FrontendMsg
-viewDummy model =
-    E.column
-        [ E.paddingEach { left = 24, right = 24, top = 12, bottom = 96 }
-        , Background.color Color.veryPaleBlue
-        , E.width (E.px (panelWidth_ model))
-        , E.height (E.px (panelHeight_ model))
-        , E.centerX
-        , Font.size 14
-        , E.alignTop
-        ]
-        []
-
-
 
 -- DIMENSIONS
-
-
-searchDocPaneHeight =
-    70
 
 
 panelWidth_ model =

@@ -58,6 +58,8 @@ init url key =
       , description = ""
       , dataFile = Nothing
       , job = ""
+      , jobFilter = ""
+      , taskFilter = ""
 
       -- UI
       , windowWidth = 600
@@ -129,6 +131,12 @@ update msg model =
         InputJob str ->
             ( { model | job = str }, Cmd.none )
 
+        InputJobFilter str ->
+            ( { model | jobFilter = str }, Cmd.none )
+
+        InputTaskFilter str ->
+            ( { model | taskFilter = str }, Cmd.none )
+
         SetStartTime ->
             ( { model | startTime = Just model.time }, Cmd.none )
 
@@ -183,6 +191,8 @@ update msg model =
                 , message = "Signed out"
                 , inputUsername = ""
                 , inputPassword = ""
+                , job = ""
+                , description = ""
               }
             , Cmd.none
             )
