@@ -161,7 +161,7 @@ summary model =
         , Background.color Color.lessPaleBlue
         , E.paddingXY 8 8
         ]
-        [ E.el [] (E.text <| "Total hours: " ++ String.fromFloat (Data.totalValue model.filteredData)) ]
+        [ E.el [] (E.text <| "Total hours: " ++ String.fromFloat (Data.totalValue model.filteredData / 3600.0)) ]
 
 
 footer model =
