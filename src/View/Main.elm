@@ -83,7 +83,11 @@ body model =
 logItem_ model =
     E.column [ E.spacing 8 ]
         [ logItem model
-        , E.row [ E.spacing 8 ] [ Button.saveItem, View.Input.jobInput model, View.Input.descriptionInput model ]
+        , E.row [ E.spacing 8 ]
+            [ Button.saveItem
+            , View.Input.jobInput model
+            , View.Input.descriptionInput model
+            ]
         ]
 
 

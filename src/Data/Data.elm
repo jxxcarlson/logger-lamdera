@@ -55,9 +55,10 @@ view zone data =
         Task { start, end, desc, job } ->
             E.row [ E.spacing 8 ]
                 [ E.el [ E.width (E.px 100) ] (E.text job)
-                , E.el [ E.width (E.px 100) ] (E.text <| DateTimeUtility.zonedTimeString zone start)
-                , E.el [ E.width (E.px 100) ] (E.text <| DateTimeUtility.zonedTimeString zone end)
-                , E.el [ E.width (E.px 100) ] (E.text <| DateTimeUtility.elapsedTimeAsString start end)
+                , E.el [ E.width (E.px 100) ] (E.text <| DateTimeUtility.zonedDateString zone end)
+                , E.el [ E.width (E.px 50) ] (E.text <| DateTimeUtility.zonedTimeString zone start)
+                , E.el [ E.width (E.px 44) ] (E.text <| DateTimeUtility.zonedTimeString zone end)
+                , E.el [ E.width (E.px 44) ] (E.text <| DateTimeUtility.elapsedTimeAsString start end)
                 , E.el [ E.width (E.px 500) ] (E.text <| desc)
                 ]
 
