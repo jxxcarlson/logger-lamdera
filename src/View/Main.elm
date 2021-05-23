@@ -80,10 +80,11 @@ footer model =
         , View.Utility.showIfIsAdmin model Button.runTask
         , Button.exportTimesheet
         , Button.exportData
-        , Button.importData
+        , View.Utility.showIfIsAdmin model Button.importData
         , View.Utility.showIfIsAdmin model (View.Input.hourlyRateInput model)
         , View.Utility.showIfIsAdmin model (viewHourlyRate model)
         , View.Utility.showIfIsAdmin model (Button.toggleMode model)
+        , View.Utility.showIfIsAdmin model (Button.test model)
         ]
 
 

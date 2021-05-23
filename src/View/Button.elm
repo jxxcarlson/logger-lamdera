@@ -11,6 +11,7 @@ module View.Button exposing
     , setStartTime
     , signIn
     , signOut
+    , test
     , toggleMode
     )
 
@@ -133,3 +134,7 @@ importData =
 
 toggleMode model =
     buttonTemplate [] ToggleMode "Toggle mode"
+
+
+test model =
+    buttonTemplate [] Test "Test"

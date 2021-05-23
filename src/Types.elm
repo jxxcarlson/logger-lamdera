@@ -122,12 +122,13 @@ type FrontendMsg
       -- ADMIN
     | AdminRunTask
     | GetUsers
+    | Test
 
 
 type ToBackend
     = -- SYSTEM
       NoOpToBackend
-    | GetRandomSeed
+    | GetAtmosphericInteger
       -- ADMIN
     | RunTask
     | SendUsers
@@ -148,7 +149,7 @@ type BackendMsg
 type ToFrontend
     = NoOpToFrontend
     | GotRandomSeed Random.Seed
-    | GotAtmosphericRandomNumberFromBackend Int
+    | GotAtmosphericInteger (Maybe Int)
     | SendMessage String
       -- ADMIN
     | GotUsers (List User)

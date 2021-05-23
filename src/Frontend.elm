@@ -88,7 +88,7 @@ init url key =
     , Cmd.batch
         [ Frontend.Cmd.setupWindow
         , Task.perform AdjustTimeZone Time.here
-        , sendToBackend GetRandomSeed
+        , sendToBackend GetAtmosphericInteger
         , Frontend.Cmd.getRandomNumberFE
         ]
     )
@@ -247,7 +247,7 @@ update msg model =
 
                         datum =
                             Data.Task
-                                { id = Debug.log "TOKEN (1)" <| model.job ++ "-" ++ token
+                                { id = Debug.log "TOKEN (1)" <| dataFile.owner ++ "-" ++ model.job ++ "-" ++ token
                                 , start = startTime
                                 , end = endTime
                                 , desc = model.description
@@ -306,10 +306,10 @@ update msg model =
                 Just user ->
                     let
                         dataList =
-                            Data.Parse.parseTasks content
+                            Data.Parse.parseTasks content |> Debug.log "DATA LIST"
 
                         dataFile =
-                            Data.Parse.createDataFileFromTasks model.time user.username dataList
+                            Data.Parse.createDataFileFromTasks model.time user.username dataList |> Debug.log "DATA FILE"
                     in
                     ( { model | csv = Just content, dataFile = Just dataFile, message = "CSV loaded: " ++ String.fromInt (String.length content) ++ " chars" }
                     , sendToBackend (ReplaceDataFile dataFile)
@@ -350,6 +350,9 @@ update msg model =
         AdminRunTask ->
             ( model, sendToBackend RunTask )
 
+        Test ->
+            ( model, sendToBackend GetAtmosphericInteger )
+
         GetUsers ->
             ( model, sendToBackend SendUsers )
 
@@ -369,8 +372,13 @@ updateFromBackend msg model =
             , Cmd.none
             )
 
-        GotAtmosphericRandomNumberFromBackend n ->
-            ( { model | message = "Atmospheric random number = " ++ String.fromInt n }, Cmd.none )
+        GotAtmosphericInteger mn ->
+            case mn of
+                Nothing ->
+                    ( { model | message = "Atmospheric random int: UNDEFINED" }, Cmd.none )
+
+                Just n ->
+                    ( { model | message = "Atmospheric random number = " ++ String.fromInt n }, Cmd.none )
 
         -- ADMIN
         GotUsers users ->

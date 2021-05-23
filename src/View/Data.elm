@@ -60,6 +60,7 @@ viewData_ model =
                 , E.width (E.px (model.windowWidth - 232))
                 , Background.color Color.paleBlue
                 , Font.size 16
+                , E.scrollbarY
                 ]
                 (List.map (Data.view model.zone) (Data.filterData model.time model.jobFilter model.taskFilter model.sinceDayFilter dataFile.data))
 
@@ -147,7 +148,17 @@ summary model =
         , Background.color Color.paleBlue
         , E.paddingXY 8 8
         ]
-        [ E.el [ Font.bold ] (E.text <| "Total hours: " ++ String.fromFloat (Utility.roundTo 2 <| Data.totalValue model.filteredData / 3600.0)) ]
+        [ itemCount model
+        , totalHours model
+        ]
+
+
+itemCount model =
+    E.el [ Font.bold ] (E.text <| "Count: " ++ String.fromInt (List.length model.filteredData))
+
+
+totalHours model =
+    E.el [ Font.bold ] (E.text <| "Total hours: " ++ String.fromFloat (Utility.roundTo 2 <| Data.totalValue model.filteredData / 3600.0))
 
 
 messageRow model =

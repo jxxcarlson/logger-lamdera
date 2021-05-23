@@ -119,8 +119,9 @@ exportData dataList =
 exportDatum : Data -> String
 exportDatum datum =
     case datum of
-        Task { start, end, desc, job } ->
-            [ Time.posixToMillis start |> String.fromInt
+        Task { id, start, end, desc, job } ->
+            [ id
+            , Time.posixToMillis start |> String.fromInt
             , Time.posixToMillis start |> String.fromInt
             , String.replace "," ";" desc
             , job

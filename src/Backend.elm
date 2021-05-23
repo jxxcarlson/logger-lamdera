@@ -66,15 +66,8 @@ updateFromFrontend sessionId clientId msg model =
         NoOpToBackend ->
             ( model, Cmd.none )
 
-        GetRandomSeed ->
-            let
-                data1 =
-                    Token.get model.randomSeed
-
-                data2 =
-                    Token.get data1.seed
-            in
-            ( { model | randomSeed = data1.seed }, sendToFrontend clientId (GotRandomSeed data2.seed) )
+        GetAtmosphericInteger ->
+            ( model, sendToFrontend clientId (GotAtmosphericInteger model.randomAtmosphericInt) )
 
         -- ADMIN
         RunTask ->
