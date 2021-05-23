@@ -1,14 +1,14 @@
-module Backend.Cmd exposing (getRandomNumber)
+module Backend.Cmd exposing (getRandomNumberBE, randomNumberUrl)
 
 import Http
 import Types exposing (BackendMsg(..))
 
 
-getRandomNumber : Cmd BackendMsg
-getRandomNumber =
+getRandomNumberBE : Cmd BackendMsg
+getRandomNumberBE =
     Http.get
         { url = randomNumberUrl 9
-        , expect = Http.expectString GotAtomsphericRandomNumber
+        , expect = Http.expectString GotAtomsphericRandomNumberBE
         }
 
 

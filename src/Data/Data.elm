@@ -32,8 +32,8 @@ type alias DataFileName =
 
 
 type Data
-    = Task { start : Time.Posix, end : Time.Posix, desc : String, job : String }
-    | Quantity { start : Time.Posix, end : Time.Posix, value : Float, desc : String }
+    = Task { id : String, start : Time.Posix, end : Time.Posix, desc : String, job : String }
+    | Quantity { id : String, start : Time.Posix, end : Time.Posix, value : Float, desc : String }
 
 
 type DataType

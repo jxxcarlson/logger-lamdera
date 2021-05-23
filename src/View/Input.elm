@@ -1,11 +1,13 @@
 module View.Input exposing
     ( descriptionInput
+    , endTimeInput
     , filterJobInput
     , filterTaskInput
     , hourlyRateInput
     , jobInput
     , passwordInput
     , sinceDayInput
+    , startTimeInput
     , usernameInput
     )
 

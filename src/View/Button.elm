@@ -11,6 +11,7 @@ module View.Button exposing
     , setStartTime
     , signIn
     , signOut
+    , toggleMode
     )
 
 import Config
@@ -128,3 +129,7 @@ exportData =
 
 importData =
     buttonTemplate [] CsvRequested "Import data"
+
+
+toggleMode model =
+    buttonTemplate [] ToggleMode "Toggle mode"

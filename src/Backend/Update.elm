@@ -27,7 +27,7 @@ gotAtomsphericRandomNumber model result =
         Ok str ->
             case String.toInt (String.trim str) of
                 Nothing ->
-                    ( model, Cmd.none )
+                    ( model, broadcast (GotAtmosphericRandomNumberFromBackend -1) )
 
                 Just rn ->
                     let
@@ -35,10 +35,10 @@ gotAtomsphericRandomNumber model result =
                             Random.initialSeed rn
                     in
                     ( { model
-                        | randomAtmosphericInt = Just rn
+                        | randomAtmosphericInt = Debug.log "ATMOS (2)" (Just rn)
                         , randomSeed = newRandomSeed
                       }
-                    , Cmd.none
+                    , broadcast (GotAtmosphericRandomNumberFromBackend rn)
                     )
 
         Err _ ->

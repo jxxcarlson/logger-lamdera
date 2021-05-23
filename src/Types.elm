@@ -15,11 +15,13 @@ import User exposing (User)
 
 
 type alias FrontendModel =
-    { key : Key
+    { -- SYSTEM
+      key : Key
     , url : Url
     , message : String
     , time : Time.Posix
     , zone : Time.Zone
+    , randomSeed : Random.Seed
 
     -- ADMIN
     , users : List User
@@ -49,7 +51,13 @@ type alias FrontendModel =
     , windowWidth : Int
     , windowHeight : Int
     , popupStatus : PopupStatus
+    , mode : UIMode
     }
+
+
+type UIMode
+    = DefaultMode
+    | EditMode
 
 
 type PopupWindow
@@ -77,15 +85,18 @@ type alias BackendModel =
 
 
 type FrontendMsg
-    = UrlClicked UrlRequest
+    = -- SYSTEM
+      UrlClicked UrlRequest
     | UrlChanged Url
     | GotViewport Dom.Viewport
     | Tick Time.Posix
     | AdjustTimeZone Time.Zone
+    | GotAtomsphericRandomNumberFE (Result Http.Error String)
     | NoOpFrontendMsg
       -- UI
     | GotNewWindowDimensions Int Int
     | ChangePopupStatus PopupStatus
+    | ToggleMode
       -- LOG
     | InputStartTime String
     | InputEndTime String
@@ -114,7 +125,9 @@ type FrontendMsg
 
 
 type ToBackend
-    = NoOpToBackend
+    = -- SYSTEM
+      NoOpToBackend
+    | GetRandomSeed
       -- ADMIN
     | RunTask
     | SendUsers
@@ -128,12 +141,14 @@ type ToBackend
 
 type BackendMsg
     = NoOpBackendMsg
-    | GotAtomsphericRandomNumber (Result Http.Error String)
+    | GotAtomsphericRandomNumberBE (Result Http.Error String)
     | BTick Time.Posix
 
 
 type ToFrontend
     = NoOpToFrontend
+    | GotRandomSeed Random.Seed
+    | GotAtmosphericRandomNumberFromBackend Int
     | SendMessage String
       -- ADMIN
     | GotUsers (List User)

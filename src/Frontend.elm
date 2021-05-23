@@ -13,8 +13,10 @@ import Frontend.Cmd
 import Frontend.Update
 import Html exposing (Html)
 import Lamdera exposing (sendToBackend)
+import Random
 import Task
 import Time
+import Token
 import Types exposing (..)
 import Url exposing (Url)
 import View.Main
@@ -45,11 +47,13 @@ subscriptions model =
 
 init : Url.Url -> Nav.Key -> ( Model, Cmd FrontendMsg )
 init url key =
-    ( { key = key
+    ( { -- SYSTEM
+        key = key
       , url = url
       , message = "Welcome!"
       , time = Time.millisToPosix 0
       , zone = Time.utc
+      , randomSeed = Random.initialSeed 1234
 
       -- ADMIN
       , users = []
@@ -74,6 +78,7 @@ init url key =
       , windowWidth = 600
       , windowHeight = 900
       , popupStatus = PopupClosed
+      , mode = DefaultMode
 
       -- USER
       , currentUser = Nothing
@@ -83,6 +88,8 @@ init url key =
     , Cmd.batch
         [ Frontend.Cmd.setupWindow
         , Task.perform AdjustTimeZone Time.here
+        , sendToBackend GetRandomSeed
+        , Frontend.Cmd.getRandomNumberFE
         ]
     )
 
@@ -114,6 +121,32 @@ update msg model =
             , Cmd.none
             )
 
+        GotAtomsphericRandomNumberFE result ->
+            case result of
+                Ok str ->
+                    case String.toInt (String.trim str) of
+                        Nothing ->
+                            ( { model | message = "Failed to get atmospheric random number" }, Cmd.none )
+
+                        Just rn ->
+                            let
+                                newRandomSeed =
+                                    Random.initialSeed rn
+                            in
+                            ( { model
+                                | randomSeed = newRandomSeed |> Debug.log "newRandomSeed (ATMOS)"
+                              }
+                            , Cmd.none
+                            )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+        --let
+        --    _ =
+        --        Debug.log "FE ATMOS RN" result
+        --in
+        --( { model | message = "ATMOS" ++ Debug.toString result }, Cmd.none )
         -- UI
         GotNewWindowDimensions w h ->
             ( { model | windowWidth = w, windowHeight = h }, Cmd.none )
@@ -126,6 +159,14 @@ update msg model =
 
         NoOpFrontendMsg ->
             ( model, Cmd.none )
+
+        ToggleMode ->
+            case model.mode of
+                DefaultMode ->
+                    ( { model | mode = EditMode }, Cmd.none )
+
+                EditMode ->
+                    ( { model | mode = DefaultMode }, Cmd.none )
 
         -- LOG
         InputStartTime str ->
@@ -201,13 +242,31 @@ update msg model =
             case ( ( model.dataFile, model.startTime, model.endTime ), model.currentUser ) of
                 ( ( Just dataFile, Just startTime, Just endTime ), Just user ) ->
                     let
+                        { token, seed } =
+                            Token.get model.randomSeed
+
                         datum =
-                            Data.Task { start = startTime, end = endTime, desc = model.description, job = model.job }
+                            Data.Task
+                                { id = Debug.log "TOKEN (1)" <| model.job ++ "-" ++ token
+                                , start = startTime
+                                , end = endTime
+                                , desc = model.description
+                                , job = model.job
+                                }
 
                         newDataFile =
                             Data.insertDatum_ dataFile.owner dataFile.name datum dataFile
+
+                        _ =
+                            Debug.log "RANDOM SEED" model.randomSeed
                     in
-                    ( { model | dataFile = Just newDataFile, startTime = Nothing, endTime = Nothing, description = "" }
+                    ( { model
+                        | randomSeed = seed
+                        , dataFile = Just newDataFile
+                        , startTime = Nothing
+                        , endTime = Nothing
+                        , description = ""
+                      }
                     , sendToBackend (SaveDatum ( user, dataFile.name ) datum)
                     )
 
@@ -298,8 +357,20 @@ update msg model =
 updateFromBackend : ToFrontend -> Model -> ( Model, Cmd FrontendMsg )
 updateFromBackend msg model =
     case msg of
+        -- SYSTEM
         NoOpToFrontend ->
             ( model, Cmd.none )
+
+        GotRandomSeed seed ->
+            ( { model
+                | randomSeed = seed
+                , message = "Got random seed: " ++ Debug.toString seed
+              }
+            , Cmd.none
+            )
+
+        GotAtmosphericRandomNumberFromBackend n ->
+            ( { model | message = "Atmospheric random number = " ++ String.fromInt n }, Cmd.none )
 
         -- ADMIN
         GotUsers users ->

@@ -44,7 +44,8 @@ parseTask str =
 
 taskParser : Parser Data
 taskParser =
-    succeed (\start end desc job -> Task { start = start, end = end, desc = desc, job = job })
+    succeed (\id start end desc job -> Task { id = id, start = start, end = end, desc = desc, job = job })
+        |= itemParser
         |= (int |> map Time.millisToPosix)
         |. spaces
         |. symbol ","

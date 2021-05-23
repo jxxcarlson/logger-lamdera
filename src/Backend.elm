@@ -9,6 +9,7 @@ import Dict
 import Lamdera exposing (ClientId, SessionId, sendToFrontend)
 import Random
 import Time
+import Token
 import Types exposing (..)
 
 
@@ -39,7 +40,7 @@ init =
       , authenticationDict = Dict.empty
       , dataDict = Dict.empty
       }
-    , Backend.Cmd.getRandomNumber
+    , Backend.Cmd.getRandomNumberBE
     )
 
 
@@ -54,15 +55,26 @@ update msg model =
             , Cmd.none
             )
 
-        GotAtomsphericRandomNumber result ->
+        GotAtomsphericRandomNumberBE result ->
             Backend.Update.gotAtomsphericRandomNumber model result
 
 
 updateFromFrontend : SessionId -> ClientId -> ToBackend -> Model -> ( Model, Cmd BackendMsg )
 updateFromFrontend sessionId clientId msg model =
     case msg of
+        -- SYSTEM
         NoOpToBackend ->
             ( model, Cmd.none )
+
+        GetRandomSeed ->
+            let
+                data1 =
+                    Token.get model.randomSeed
+
+                data2 =
+                    Token.get data1.seed
+            in
+            ( { model | randomSeed = data1.seed }, sendToFrontend clientId (GotRandomSeed data2.seed) )
 
         -- ADMIN
         RunTask ->
@@ -87,7 +99,8 @@ updateFromFrontend sessionId clientId msg model =
                                 ( model
                                 , Cmd.batch
                                     [ sendToFrontend clientId (SendUser userData.user)
-                                    , sendToFrontend clientId (SendMessage "Success! You are signed in.")
+                                    , sendToFrontend clientId
+                                        (SendMessage <| "Success! You are signed in, but there is no data file ")
                                     ]
                                 )
 
@@ -96,7 +109,9 @@ updateFromFrontend sessionId clientId msg model =
                                 , Cmd.batch
                                     [ sendToFrontend clientId (SendUser userData.user)
                                     , sendToFrontend clientId (GotDataFile dataFile)
-                                    , sendToFrontend clientId (SendMessage <| "Success! You are signed in, log file = " ++ dataFile.name)
+
+                                    --, sendToFrontend clientId
+                                    --    (SendMessage <| "Success! You are signed in: " ++ String.fromInt (model.randomAtmosphericInt |> Maybe.withDefault 0))
                                     ]
                                 )
 

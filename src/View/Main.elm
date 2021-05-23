@@ -15,6 +15,7 @@ import View.Button as Button
 import View.Color as Color
 import View.Data
 import View.Dimensions as Dimensions
+import View.EditData
 import View.Input
 import View.Popup
 import View.Style
@@ -37,10 +38,20 @@ mainColumn model =
     E.column (mainColumnStyle model)
         [ E.column [ E.spacing 36, E.width (E.px <| Dimensions.appWidth_ model), E.height (E.px (Dimensions.appHeight_ model)) ]
             [ header model
-            , View.Utility.showIf (model.currentUser /= Nothing) (View.Data.view model)
+            , View.Utility.showIf (model.currentUser /= Nothing) (dataView model)
             , View.Utility.showIf (model.currentUser /= Nothing) (footer model)
             ]
         ]
+
+
+dataView : Model -> Element FrontendMsg
+dataView model =
+    case model.mode of
+        DefaultMode ->
+            View.Data.view model
+
+        EditMode ->
+            View.EditData.view model
 
 
 viewTitle model =
@@ -72,6 +83,7 @@ footer model =
         , Button.importData
         , View.Utility.showIfIsAdmin model (View.Input.hourlyRateInput model)
         , View.Utility.showIfIsAdmin model (viewHourlyRate model)
+        , View.Utility.showIfIsAdmin model (Button.toggleMode model)
         ]
 
 
