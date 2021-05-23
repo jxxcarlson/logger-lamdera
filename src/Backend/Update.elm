@@ -35,7 +35,7 @@ gotAtomsphericRandomNumber model result =
                             Random.initialSeed rn
                     in
                     ( { model
-                        | randomAtmosphericInt = Debug.log "ATMOS (2)" (Just rn)
+                        | randomAtmosphericInt = Just rn
                         , randomSeed = newRandomSeed
                       }
                     , Cmd.none

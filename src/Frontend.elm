@@ -134,7 +134,7 @@ update msg model =
                                     Random.initialSeed rn
                             in
                             ( { model
-                                | randomSeed = newRandomSeed |> Debug.log "newRandomSeed (ATMOS)"
+                                | randomSeed = newRandomSeed
                               }
                             , Cmd.none
                             )
@@ -247,7 +247,7 @@ update msg model =
 
                         datum =
                             Data.Task
-                                { id = Debug.log "TOKEN (1)" <| dataFile.owner ++ "-" ++ model.job ++ "-" ++ token
+                                { id = dataFile.owner ++ "-" ++ model.job ++ "-" ++ token
                                 , start = startTime
                                 , end = endTime
                                 , desc = model.description
@@ -256,9 +256,6 @@ update msg model =
 
                         newDataFile =
                             Data.insertDatum_ dataFile.owner dataFile.name datum dataFile
-
-                        _ =
-                            Debug.log "RANDOM SEED" model.randomSeed
                     in
                     ( { model
                         | randomSeed = seed
@@ -306,10 +303,10 @@ update msg model =
                 Just user ->
                     let
                         dataList =
-                            Data.Parse.parseTasks content |> Debug.log "DATA LIST"
+                            Data.Parse.parseTasks content
 
                         dataFile =
-                            Data.Parse.createDataFileFromTasks model.time user.username dataList |> Debug.log "DATA FILE"
+                            Data.Parse.createDataFileFromTasks model.time user.username dataList
                     in
                     ( { model | csv = Just content, dataFile = Just dataFile, message = "CSV loaded: " ++ String.fromInt (String.length content) ++ " chars" }
                     , sendToBackend (ReplaceDataFile dataFile)
@@ -367,7 +364,7 @@ updateFromBackend msg model =
         GotRandomSeed seed ->
             ( { model
                 | randomSeed = seed
-                , message = "Got random seed: " ++ Debug.toString seed
+                , message = "Got random seed"
               }
             , Cmd.none
             )
