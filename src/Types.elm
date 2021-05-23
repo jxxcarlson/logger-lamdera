@@ -112,7 +112,7 @@ type FrontendMsg
     | ExportTimeSheet
     | ExportData
     | CsvRequested
-    | CsvSelected File
+    | CsvSelected File.File
     | CsvLoaded String
       -- USER
     | SignIn
