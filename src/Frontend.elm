@@ -5,7 +5,10 @@ import Browser exposing (UrlRequest(..))
 import Browser.Events
 import Browser.Navigation as Nav
 import Data.Data as Data
+import Data.Parse
+import File
 import File.Download as Download
+import File.Select as Select
 import Frontend.Cmd
 import Frontend.Update
 import Html exposing (Html)
@@ -65,6 +68,7 @@ init url key =
       , jobFilter = ""
       , taskFilter = ""
       , sinceDayFilter = ""
+      , csv = Nothing
 
       -- UI
       , windowWidth = 600
@@ -219,8 +223,38 @@ update msg model =
                 ( _, _ ) ->
                     ( { model | message = "Sorry, no user signed in!" }, Cmd.none )
 
-        ExportCSV ->
-            ( { model | message = "Exporting log to CSV ..." }, Data.saveLog model.zone model.filteredData )
+        ExportTimeSheet ->
+            ( { model | message = "Exporting timesheet ..." }, Data.saveTimeSheet model.zone model.filteredData )
+
+        ExportData ->
+            ( { model | message = "Exporting data ..." }, Data.saveData model.zone model.filteredData )
+
+        CsvRequested ->
+            ( model
+            , Select.file [ "text/csv" ] CsvSelected
+            )
+
+        CsvSelected file ->
+            ( model
+            , Task.perform CsvLoaded (File.toString file)
+            )
+
+        CsvLoaded content ->
+            case model.currentUser of
+                Nothing ->
+                    ( model, Cmd.none )
+
+                Just user ->
+                    let
+                        dataList =
+                            Data.Parse.parseTasks content
+
+                        dataFile =
+                            Data.Parse.createDataFileFromTasks model.time user.username dataList
+                    in
+                    ( { model | csv = Just content, dataFile = Just dataFile, message = "CSV loaded: " ++ String.fromInt (String.length content) ++ " chars" }
+                    , sendToBackend (ReplaceDataFile dataFile)
+                    )
 
         -- USER
         SignIn ->

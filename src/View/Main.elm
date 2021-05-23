@@ -191,7 +191,9 @@ footer model =
         ]
         [ Button.adminPopup model
         , View.Utility.showIfIsAdmin model Button.runTask
-        , Button.exportCSV
+        , Button.exportTimesheet
+        , Button.exportData
+        , Button.importData
         , View.Utility.showIfIsAdmin model (View.Input.hourlyRateInput model)
         , View.Utility.showIfIsAdmin model (viewHourlyRate model)
         ]

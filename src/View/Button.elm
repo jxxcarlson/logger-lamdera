@@ -1,7 +1,9 @@
 module View.Button exposing
     ( adminPopup
-    , exportCSV
+    , exportData
+    , exportTimesheet
     , getUsers
+    , importData
     , linkTemplate
     , runTask
     , saveItem
@@ -116,5 +118,13 @@ saveItem =
     buttonTemplate [ E.width (E.px 100) ] SaveItem "Save"
 
 
-exportCSV =
-    buttonTemplate [ E.width (E.px 120) ] ExportCSV "Export to CSV"
+exportTimesheet =
+    buttonTemplate [ E.width (E.px 140) ] ExportTimeSheet "Export timesheet"
+
+
+exportData =
+    buttonTemplate [ E.width (E.px 120) ] ExportData "Export data"
+
+
+importData =
+    buttonTemplate [] CsvRequested "Import data"

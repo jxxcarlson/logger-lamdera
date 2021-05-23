@@ -5,6 +5,7 @@ import Browser exposing (UrlRequest)
 import Browser.Dom as Dom
 import Browser.Navigation exposing (Key)
 import Data.Data exposing (Data, DataFile)
+import File exposing (File)
 import Http
 import Random
 import Task
@@ -37,6 +38,7 @@ type alias FrontendModel =
     , sinceDayFilter : String
     , dataFile : Maybe DataFile
     , filteredData : List Data
+    , csv : Maybe String
 
     -- USER
     , currentUser : Maybe User
@@ -96,7 +98,11 @@ type FrontendMsg
     | SetStartTime
     | SetEndTime
     | SaveItem
-    | ExportCSV
+    | ExportTimeSheet
+    | ExportData
+    | CsvRequested
+    | CsvSelected File
+    | CsvLoaded String
       -- USER
     | SignIn
     | SignOut
@@ -117,6 +123,7 @@ type ToBackend
       -- LOG
     | GetDatafile ( User, DataFileName )
     | SaveDatum ( User, DataFileName ) Data
+    | ReplaceDataFile DataFile
 
 
 type BackendMsg

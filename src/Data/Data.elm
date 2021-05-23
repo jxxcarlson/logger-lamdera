@@ -9,7 +9,9 @@ module Data.Data exposing
     , insertDatum
     , insertDatum_
     , newDataFile
-    , saveLog
+    , replace
+    , saveData
+    , saveTimeSheet
     , totalValue
     , view
     )
@@ -49,18 +51,41 @@ type alias DataFile =
     }
 
 
-saveLog : Time.Zone -> List Data -> Cmd msg
-saveLog zone dataList =
-    Download.string "log.csv" "text/csv" (exportData zone dataList)
+{-|
+
+    > dd = Dict.insert ("jxx", "qlog") { name = "qlog", owner = "jxx", dataType = TQuantity, data = []} Dict.empty
+    Dict.fromList [(("jxx","qlog"),{ data = [], dataType = TQuantity, name = "qlog", owner = "jxx" })]
+
+    > insert "jxx" "qlog" (Quantity {start = Time.millisToPosix 0, end = Time.millisToPosix 1, desc = "Ho ho ho!", value = 123}) dd
+    Dict.fromList [(("jxx","qlog"),{ data = [Quantity { desc = "Ho ho ho!", end = Posix 1, start = Posix 0, value = 123 }], dataType = TQuantity, name = "qlog", owner = "jxx" })]
+
+    > insert "jxx2" "qlog" (Quantity {start = Time.millisToPosix 0, end = Time.millisToPosix 1, desc = "Ho ho ho!", value = 123}) dd
+    Dict.fromList [(("jxx","qlog"),{ data = [], dataType = TQuantity, name = "qlog", owner = "jxx" })]
+
+    > insert "jxx" "qlog" (Task {start = Time.millisToPosix 0, end = Time.millisToPosix 1, desc = "Ho ho ho!"}) dd
+    Dict.fromList [(("jxx","qlog"),{ data = [], dataType = TQuantity, name = "qlog", owner = "jxx" })]
+
+-}
+type alias DataDict =
+    Dict ( Username, DataFileName ) DataFile
 
 
-exportData : Time.Zone -> List Data -> String
-exportData zone dataList =
-    List.map (exportDatum zone) dataList |> String.join "\n"
+
+-- EXPORT TIME SHEET
 
 
-exportDatum : Time.Zone -> Data -> String
-exportDatum zone datum =
+saveTimeSheet : Time.Zone -> List Data -> Cmd msg
+saveTimeSheet zone dataList =
+    Download.string "timesheet.csv" "text/csv" (exportTimeSheet zone dataList)
+
+
+exportTimeSheet : Time.Zone -> List Data -> String
+exportTimeSheet zone dataList =
+    List.map (exportTimeSheetDatum zone) dataList |> String.join "\n"
+
+
+exportTimeSheetDatum : Time.Zone -> Data -> String
+exportTimeSheetDatum zone datum =
     case datum of
         Task { start, end, desc, job } ->
             [ DateTimeUtility.zonedDateString zone end
@@ -73,6 +98,40 @@ exportDatum zone datum =
             [ DateTimeUtility.zonedDateString zone end
             , String.fromFloat value
             , String.replace "," ";" desc
+            ]
+                |> String.join ","
+
+
+
+-- EXPORT LIST DATA
+
+
+saveData : Time.Zone -> List Data -> Cmd msg
+saveData zone dataList =
+    Download.string "data.csv" "text/csv" (exportData dataList)
+
+
+exportData : List Data -> String
+exportData dataList =
+    List.map exportDatum dataList |> String.join "\n"
+
+
+exportDatum : Data -> String
+exportDatum datum =
+    case datum of
+        Task { start, end, desc, job } ->
+            [ Time.posixToMillis start |> String.fromInt
+            , Time.posixToMillis start |> String.fromInt
+            , String.replace "," ";" desc
+            , job
+            ]
+                |> String.join ","
+
+        Quantity { start, end, desc, value } ->
+            [ Time.posixToMillis start |> String.fromInt
+            , Time.posixToMillis start |> String.fromInt
+            , String.replace "," ";" desc
+            , String.fromFloat value
             ]
                 |> String.join ","
 
@@ -211,25 +270,6 @@ ifApply test transform a =
         a
 
 
-{-|
-
-    > dd = Dict.insert ("jxx", "qlog") { name = "qlog", owner = "jxx", dataType = TQuantity, data = []} Dict.empty
-    Dict.fromList [(("jxx","qlog"),{ data = [], dataType = TQuantity, name = "qlog", owner = "jxx" })]
-
-    > insert "jxx" "qlog" (Quantity {start = Time.millisToPosix 0, end = Time.millisToPosix 1, desc = "Ho ho ho!", value = 123}) dd
-    Dict.fromList [(("jxx","qlog"),{ data = [Quantity { desc = "Ho ho ho!", end = Posix 1, start = Posix 0, value = 123 }], dataType = TQuantity, name = "qlog", owner = "jxx" })]
-
-    > insert "jxx2" "qlog" (Quantity {start = Time.millisToPosix 0, end = Time.millisToPosix 1, desc = "Ho ho ho!", value = 123}) dd
-    Dict.fromList [(("jxx","qlog"),{ data = [], dataType = TQuantity, name = "qlog", owner = "jxx" })]
-
-    > insert "jxx" "qlog" (Task {start = Time.millisToPosix 0, end = Time.millisToPosix 1, desc = "Ho ho ho!"}) dd
-    Dict.fromList [(("jxx","qlog"),{ data = [], dataType = TQuantity, name = "qlog", owner = "jxx" })]
-
--}
-type alias DataDict =
-    Dict ( Username, DataFileName ) DataFile
-
-
 newDataFile : Time.Posix -> Username -> DataFileName -> DataType -> DataFile
 newDataFile time username dataFileName dataType =
     { name = dataFileName
@@ -246,6 +286,11 @@ insertDataFile time username dataFileName dataType dataDict =
     Dict.insert ( username, dataFileName )
         (newDataFile time username dataFileName dataType)
         dataDict
+
+
+replace : DataFile -> DataDict -> DataDict
+replace dataFile dataDict =
+    Dict.insert ( dataFile.owner, dataFile.name ) dataFile dataDict
 
 
 insertDatum : Username -> DataFileName -> Data -> DataDict -> DataDict
