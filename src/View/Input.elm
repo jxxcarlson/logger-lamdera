@@ -95,15 +95,15 @@ jobInput model =
 
 
 filterJobInput model =
-    inputFieldTemplate [] (E.px 100) "Filter jobs" InputJobFilter model.jobFilter
+    inputFieldTemplate [ Background.color Color.veryPalePink ] (E.px 100) "Filter jobs" InputJobFilter model.jobFilter
 
 
 filterTaskInput model =
-    inputFieldTemplate [] (E.px 200) "Filter tasks" InputTaskFilter model.taskFilter
+    inputFieldTemplate [ Background.color Color.veryPalePink ] (E.px 200) "Filter tasks" InputTaskFilter model.taskFilter
 
 
 sinceDayInput model =
-    inputFieldTemplate [] (E.px 200) "Filter since mm/dd" InputSinceDayFilter model.sinceDayFilter
+    inputFieldTemplate [ Background.color Color.veryPalePink ] (E.px 200) "Filter since mm/dd" InputSinceDayFilter model.sinceDayFilter
 
 
 hourlyRateInput model =

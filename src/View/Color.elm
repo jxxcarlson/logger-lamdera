@@ -16,6 +16,7 @@ module View.Color exposing
     , red
     , transparentBlue
     , veryPaleBlue
+    , veryPalePink
     , white
     )
 
@@ -44,6 +45,10 @@ black =
 
 palePink =
     E.rgb255 250 210 243
+
+
+veryPalePink =
+    E.rgb255 250 230 243
 
 
 red : E.Color
