@@ -15,13 +15,22 @@ import Element as E exposing (Element, px)
 import Element.Background as Background
 import Element.Font as Font
 import Element.Input as Input
-import Types exposing (FrontendModel, FrontendMsg(..))
+import Types exposing (DataEntryMode(..), FrontendModel, FrontendMsg(..))
 import View.Color as Color
 
 
-inputFieldTemplate : E.Length -> String -> (String -> msg) -> String -> Element msg
-inputFieldTemplate width_ default msg text =
-    Input.text [ E.moveUp 5, Background.color Color.paleBlue, Font.color (Color.gray 0.1), Font.size 16, E.height (px 33), E.width width_ ]
+inputFieldTemplate : List (E.Attribute msg) -> E.Length -> String -> (String -> msg) -> String -> Element msg
+inputFieldTemplate attr width_ default msg text =
+    Input.text
+        ([ E.moveUp 5
+         , Background.color Color.paleBlue
+         , Font.color (Color.gray 0.1)
+         , Font.size 16
+         , E.height (px 33)
+         , E.width width_
+         ]
+            ++ attr
+        )
         { onChange = msg
         , text = text
         , label = Input.labelHidden default
@@ -45,7 +54,7 @@ passwordTemplate width_ default msg text =
 
 
 usernameInput model =
-    inputFieldTemplate (E.px 120) "Username" InputUsername model.inputUsername
+    inputFieldTemplate [] (E.px 120) "Username" InputUsername model.inputUsername
 
 
 passwordInput model =
@@ -57,15 +66,24 @@ passwordInput model =
 
 
 startTimeInput model =
-    inputFieldTemplate (E.px 120) "Start" InputStartTime model.inputStartTime
+    inputFieldTemplate [] (E.px 120) "Start" InputStartTime model.inputStartTime
 
 
 endTimeInput model =
-    inputFieldTemplate (E.px 120) "End" InputEndTime model.inputEndTime
+    inputFieldTemplate [] (E.px 120) "End" InputEndTime model.inputEndTime
 
 
 descriptionInput model =
-    inputFieldTemplate (panelWidth model) "Description" InputDescription model.description
+    inputFieldTemplate [ editorBG model ] (panelWidth model) "Description" InputDescription model.description
+
+
+editorBG model =
+    case model.dataEntryMode of
+        StandardDataEntry ->
+            Background.color Color.paleBlue
+
+        EditItemEntry ->
+            Background.color Color.palePink
 
 
 panelWidth model =
@@ -73,20 +91,20 @@ panelWidth model =
 
 
 jobInput model =
-    inputFieldTemplate (E.px 100) "Job" InputJob model.job
+    inputFieldTemplate [ editorBG model ] (E.px 100) "Job" InputJob model.job
 
 
 filterJobInput model =
-    inputFieldTemplate (E.px 100) "Filter jobs" InputJobFilter model.jobFilter
+    inputFieldTemplate [] (E.px 100) "Filter jobs" InputJobFilter model.jobFilter
 
 
 filterTaskInput model =
-    inputFieldTemplate (E.px 200) "Filter tasks" InputTaskFilter model.taskFilter
+    inputFieldTemplate [] (E.px 200) "Filter tasks" InputTaskFilter model.taskFilter
 
 
 sinceDayInput model =
-    inputFieldTemplate (E.px 200) "Filter since mm/dd" InputSinceDayFilter model.sinceDayFilter
+    inputFieldTemplate [] (E.px 200) "Filter since mm/dd" InputSinceDayFilter model.sinceDayFilter
 
 
 hourlyRateInput model =
-    inputFieldTemplate (E.px 110) "Hourly rate" InputHourlyRate model.hourlyRate
+    inputFieldTemplate [] (E.px 110) "Hourly rate" InputHourlyRate model.hourlyRate

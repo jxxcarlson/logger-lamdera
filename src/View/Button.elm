@@ -40,6 +40,16 @@ buttonTemplate attrList msg label_ =
         ]
 
 
+microButtonTemplate : List (E.Attribute msg) -> msg -> String -> Element msg
+microButtonTemplate attrList msg label_ =
+    E.row ([ View.Style.bgGray 0.2, E.pointer, E.mouseDown [ Background.color Color.darkRed ] ] ++ attrList)
+        [ Input.button View.Style.buttonStyle
+            { onPress = Just msg
+            , label = E.el [ E.centerX, E.centerY, Font.size 14 ] (E.text label_)
+            }
+        ]
+
+
 linkTemplate : msg -> E.Color -> String -> Element msg
 linkTemplate msg fontColor label_ =
     E.row [ E.pointer, E.mouseDown [ Background.color Color.paleBlue ] ]

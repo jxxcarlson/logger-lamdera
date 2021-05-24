@@ -54,6 +54,7 @@ init url key =
       , time = Time.millisToPosix 0
       , zone = Time.utc
       , randomSeed = Random.initialSeed 1234
+      , dataEntryMode = StandardDataEntry
 
       -- ADMIN
       , users = []
@@ -66,6 +67,7 @@ init url key =
       , description = ""
       , dataFile = Nothing
       , filteredData = []
+      , currentDatum = Nothing
       , job = ""
       , totalValue = 0
       , count = 0
@@ -227,52 +229,24 @@ update msg model =
         SetEndTime ->
             ( { model | endTime = Just model.time }, Cmd.none )
 
+        EditItem datum ->
+            ( { model
+                | message = "Editing " ++ Data.getId datum
+                , currentDatum = Just datum
+                , dataEntryMode = EditItemEntry
+                , job = Data.getJob datum
+                , description = Data.getDescription datum
+              }
+            , Cmd.none
+            )
+
         SaveItem ->
-            case ( ( model.dataFile, model.startTime, model.endTime ), model.currentUser ) of
-                ( ( Just dataFile, Just startTime, Just endTime ), Just user ) ->
-                    let
-                        { token, seed } =
-                            Token.get model.randomSeed
+            case model.dataEntryMode of
+                StandardDataEntry ->
+                    Frontend.Update.saveItem model
 
-                        datum =
-                            Data.Task
-                                { id = dataFile.owner ++ "-" ++ model.job ++ "-" ++ token
-                                , start = startTime
-                                , end = endTime
-                                , desc = model.description
-                                , job = model.job
-                                }
-
-                        filteredData =
-                            Data.filterData model.time model.jobFilter model.taskFilter model.sinceDayFilter newDataFile.data
-
-                        newDataFile =
-                            Data.insertDatum_ dataFile.owner dataFile.name datum dataFile
-                    in
-                    ( { model
-                        | randomSeed = seed
-                        , dataFile = Just newDataFile
-                        , filteredData = filteredData
-                        , totalValue = Data.totalValue filteredData
-                        , count = List.length filteredData
-                        , startTime = Nothing
-                        , endTime = Nothing
-                        , description = ""
-                      }
-                    , sendToBackend (SaveDatum ( user, dataFile.name ) datum)
-                    )
-
-                ( ( Nothing, _, _ ), _ ) ->
-                    ( { model | message = "Sorry, no log file" }, Cmd.none )
-
-                ( ( _, Nothing, _ ), _ ) ->
-                    ( { model | message = "Sorry, start time not set" }, Cmd.none )
-
-                ( ( _, _, Nothing ), _ ) ->
-                    ( { model | message = "Sorry, end time not set" }, Cmd.none )
-
-                ( _, _ ) ->
-                    ( { model | message = "Sorry, no user signed in!" }, Cmd.none )
+                EditItemEntry ->
+                    Frontend.Update.saveEditedItem model.currentDatum model
 
         ExportTimeSheet ->
             ( { model | message = "Exporting timesheet ..." }, Data.saveTimeSheet model.zone model.filteredData )

@@ -4,22 +4,28 @@ module Data.Data exposing
     , DataFile
     , DataType(..)
     , filterData
-    , heading
+    , getDescription
+    , getId
+    , getJob
     , insertDataFile
     , insertDatum
     , insertDatum_
     , newDataFile
     , replace
+    , replaceDatum
+    , replaceDatumInDataFile
     , saveData
     , saveTimeSheet
+    , testDatum
     , totalValue
-    , view
+    , updateDescription
+    , updateJob
     )
 
 import DateTimeUtility
 import Dict exposing (Dict)
-import Element as E exposing (Element)
 import File.Download as Download
+import List.Extra
 import Time
 
 
@@ -31,9 +37,33 @@ type alias DataFileName =
     String
 
 
+testDatum =
+    Task { id = "1", start = Time.millisToPosix 0, end = Time.millisToPosix 1, desc = "foo", job = "bar" }
+
+
 type Data
     = Task { id : String, start : Time.Posix, end : Time.Posix, desc : String, job : String }
     | Quantity { id : String, start : Time.Posix, end : Time.Posix, value : Float, desc : String }
+
+
+updateJob : String -> Data -> Data
+updateJob str datum =
+    case datum of
+        Task data ->
+            Task { data | job = str }
+
+        Quantity data ->
+            Quantity data
+
+
+updateDescription : String -> Data -> Data
+updateDescription str datum =
+    case datum of
+        Task data ->
+            Task { data | desc = str }
+
+        Quantity data ->
+            Quantity { data | desc = str }
 
 
 type DataType
@@ -137,6 +167,16 @@ exportDatum datum =
                 |> String.join ","
 
 
+getId : Data -> String
+getId data =
+    case data of
+        Task { id, start, end, desc, job } ->
+            id
+
+        Quantity { id, start, end, desc, value } ->
+            id
+
+
 getValue : Data -> Float
 getValue data =
     case data of
@@ -162,8 +202,8 @@ getJob datum =
             ""
 
 
-getDesc : Data -> String
-getDesc datum =
+getDescription : Data -> String
+getDescription datum =
     case datum of
         Task { start, end, desc, job } ->
             desc
@@ -182,59 +222,11 @@ getEndTime datum =
             Time.posixToMillis end
 
 
-heading : DataType -> Element msg
-heading dataType =
-    let
-        nudge =
-            E.moveRight 4
-    in
-    case dataType of
-        TTask ->
-            E.row [ E.spacing 8 ]
-                [ E.el [ E.width (E.px 100), nudge ] (E.text "Job")
-                , E.el [ E.width (E.px 100), nudge ] (E.text <| "Date")
-                , E.el [ E.width (E.px 50), nudge ] (E.text <| "Start")
-                , E.el [ E.width (E.px 44), nudge ] (E.text <| "End")
-                , E.el [ E.width (E.px 70), nudge ] (E.text <| "Elapsed")
-                , E.el [ E.width (E.px 500), nudge ] (E.text <| "Description")
-                ]
-
-        TQuantity ->
-            E.row [ E.spacing 8 ]
-                [ E.el [ E.width (E.px 100), nudge ] (E.text <| "Start")
-                , E.el [ E.width (E.px 100), nudge ] (E.text <| "End")
-                , E.el [ E.width (E.px 100), nudge ] (E.text <| "Value")
-                , E.el [ E.width (E.px 500), nudge ] (E.text <| "Description")
-                ]
-
-
-view : Time.Zone -> Data -> Element msg
-view zone data =
-    case data of
-        Task { start, end, desc, job } ->
-            E.row [ E.spacing 8 ]
-                [ E.el [ E.width (E.px 100) ] (E.text job)
-                , E.el [ E.width (E.px 100) ] (E.text <| DateTimeUtility.zonedDateString zone end)
-                , E.el [ E.width (E.px 50) ] (E.text <| DateTimeUtility.zonedTimeString zone start)
-                , E.el [ E.width (E.px 44) ] (E.text <| DateTimeUtility.zonedTimeString zone end)
-                , E.el [ E.width (E.px 70) ] (E.text <| DateTimeUtility.elapsedTimeAsString start end)
-                , E.el [ E.width (E.px 500) ] (E.text <| desc)
-                ]
-
-        Quantity { start, end, value, desc } ->
-            E.row [ E.spacing 8 ]
-                [ E.el [ E.width (E.px 100) ] (E.text <| DateTimeUtility.zonedTimeString zone start)
-                , E.el [ E.width (E.px 100) ] (E.text <| DateTimeUtility.zonedTimeString zone end)
-                , E.el [ E.width (E.px 100) ] (E.text <| String.fromFloat value)
-                , E.el [ E.width (E.px 500) ] (E.text <| desc)
-                ]
-
-
 filterData1 : String -> String -> List Data -> List Data
 filterData1 jobFragment taskFragment data =
     data
         |> List.filter (\datum -> String.contains jobFragment (getJob datum))
-        |> List.filter (\datum -> String.contains taskFragment (getDesc datum))
+        |> List.filter (\datum -> String.contains taskFragment (getDescription datum))
 
 
 filterData : Time.Posix -> String -> String -> String -> List Data -> List Data
@@ -250,7 +242,7 @@ filterData posix jobFragment taskFragment earliestDateAsString data =
     in
     data
         |> filterIf (jobFragment /= "") (\datum -> String.contains jobFragment (getJob datum))
-        |> filterIf (taskFragment /= "") (\datum -> String.contains taskFragment (getDesc datum))
+        |> filterIf (taskFragment /= "") (\datum -> String.contains taskFragment (getDescription datum))
         |> filterIf (earliestTime > 0) (\datum -> earliestTime <= getEndTime datum)
 
 
@@ -312,10 +304,38 @@ insertDatum username dataFileName datum dataDict =
                 dataDict
 
 
+replaceDatum : Username -> DataFileName -> Data -> DataDict -> DataDict
+replaceDatum username dataFileName datum dataDict =
+    case Dict.get ( username, dataFileName ) dataDict of
+        Nothing ->
+            dataDict
+
+        Just dataFile ->
+            if dataTypesMatch datum dataFile then
+                Dict.insert ( username, dataFileName ) { dataFile | data = replaceDatumInDataList datum dataFile.data } dataDict
+
+            else
+                dataDict
+
+
 insertDatum_ : Username -> DataFileName -> Data -> DataFile -> DataFile
 insertDatum_ username dataFileName datum dataFile =
     if dataTypesMatch datum dataFile then
         { dataFile | data = datum :: dataFile.data }
+
+    else
+        dataFile
+
+
+replaceDatumInDataList : Data -> List Data -> List Data
+replaceDatumInDataList datum dataList =
+    List.Extra.setIf (\datum_ -> getId datum_ == getId datum) datum dataList
+
+
+replaceDatumInDataFile : Data -> DataFile -> DataFile
+replaceDatumInDataFile datum dataFile =
+    if dataTypesMatch datum dataFile then
+        { dataFile | data = replaceDatumInDataList datum dataFile.data }
 
     else
         dataFile

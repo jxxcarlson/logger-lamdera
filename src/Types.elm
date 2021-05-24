@@ -22,6 +22,7 @@ type alias FrontendModel =
     , time : Time.Posix
     , zone : Time.Zone
     , randomSeed : Random.Seed
+    , dataEntryMode : DataEntryMode
 
     -- ADMIN
     , users : List User
@@ -41,6 +42,7 @@ type alias FrontendModel =
     , sinceDayFilter : String
     , dataFile : Maybe DataFile
     , filteredData : List Data
+    , currentDatum : Maybe Data
     , csv : Maybe String
 
     -- USER
@@ -54,6 +56,11 @@ type alias FrontendModel =
     , popupStatus : PopupStatus
     , mode : UIMode
     }
+
+
+type DataEntryMode
+    = StandardDataEntry
+    | EditItemEntry
 
 
 type UIMode
@@ -115,6 +122,7 @@ type FrontendMsg
     | CsvRequested
     | CsvSelected File.File
     | CsvLoaded String
+    | EditItem Data
       -- USER
     | SignIn
     | SignOut
@@ -138,6 +146,7 @@ type ToBackend
       -- LOG
     | GetDatafile ( User, DataFileName )
     | SaveDatum ( User, DataFileName ) Data
+    | ReplaceDatum ( User, DataFileName ) Data
     | ReplaceDataFile DataFile
 
 

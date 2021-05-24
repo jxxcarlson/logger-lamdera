@@ -2,6 +2,7 @@ module View.Data exposing (view)
 
 import Calendar
 import Data.Data as Data
+import Data.View
 import DateTime exposing (DateTime)
 import DateTimeUtility
 import Element as E exposing (Element)
@@ -62,7 +63,7 @@ viewData_ model =
                 , Font.size 16
                 , E.scrollbarY
                 ]
-                (List.map (Data.view model.zone) (Data.filterData model.time model.jobFilter model.taskFilter model.sinceDayFilter dataFile.data))
+                (List.map (Data.View.view model.zone) (Data.filterData model.time model.jobFilter model.taskFilter model.sinceDayFilter dataFile.data))
 
 
 logItem_ model =
@@ -139,7 +140,7 @@ dataHeader model =
         , E.paddingXY 8 8
         , Font.bold
         ]
-        [ Data.heading Data.TTask ]
+        [ E.el [ E.moveRight 30 ] (Data.View.heading Data.TTask) ]
 
 
 summary model =

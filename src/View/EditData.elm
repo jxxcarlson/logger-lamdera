@@ -2,6 +2,7 @@ module View.EditData exposing (view)
 
 import Calendar
 import Data.Data as Data exposing (Data(..))
+import Data.View
 import DateTime exposing (DateTime)
 import DateTimeUtility
 import Element as E exposing (Element)
@@ -157,7 +158,7 @@ dataHeader model =
         , E.paddingXY 8 8
         , Font.bold
         ]
-        [ Data.heading Data.TTask ]
+        [ Data.View.heading Data.TTask ]
 
 
 summary model =

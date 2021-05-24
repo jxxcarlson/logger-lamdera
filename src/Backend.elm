@@ -137,5 +137,8 @@ updateFromFrontend sessionId clientId msg model =
         SaveDatum ( user, dataFileName ) datum ->
             ( { model | dataDict = Data.Data.insertDatum user.username dataFileName datum model.dataDict }, Cmd.none )
 
+        ReplaceDatum ( user, dataFileName ) datum ->
+            ( { model | dataDict = Data.Data.replaceDatum user.username dataFileName datum model.dataDict }, Cmd.none )
+
         ReplaceDataFile dataFile ->
             ( { model | dataDict = Data.Data.replace dataFile model.dataDict }, Cmd.none )
