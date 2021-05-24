@@ -22,7 +22,7 @@ app =
         { init = init
         , update = update
         , updateFromFrontend = updateFromFrontend
-        , subscriptions = \m -> Sub.none
+        , subscriptions = \m -> Time.every 86400000 BTick
         }
 
 
@@ -52,7 +52,7 @@ update msg model =
 
         BTick newTime ->
             ( { model | time = newTime }
-            , Cmd.none
+            , Backend.Cmd.getRandomNumberBE
             )
 
         GotAtomsphericRandomNumberBE result ->
