@@ -260,6 +260,7 @@ update msg model =
                     ( { model
                         | randomSeed = seed
                         , dataFile = Just newDataFile
+                        , filteredData = Data.filterData model.time model.jobFilter model.taskFilter model.sinceDayFilter newDataFile.data
                         , startTime = Nothing
                         , endTime = Nothing
                         , description = ""
