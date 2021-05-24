@@ -243,13 +243,18 @@ update msg model =
                                 , job = model.job
                                 }
 
+                        filteredData =
+                            Data.filterData model.time model.jobFilter model.taskFilter model.sinceDayFilter newDataFile.data
+
                         newDataFile =
                             Data.insertDatum_ dataFile.owner dataFile.name datum dataFile
                     in
                     ( { model
                         | randomSeed = seed
                         , dataFile = Just newDataFile
-                        , filteredData = Data.filterData model.time model.jobFilter model.taskFilter model.sinceDayFilter newDataFile.data
+                        , filteredData = filteredData
+                        , totalValue = Data.totalValue filteredData
+                        , count = filteredData
                         , startTime = Nothing
                         , endTime = Nothing
                         , description = ""
