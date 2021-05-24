@@ -105,7 +105,7 @@ updateFromFrontend sessionId clientId msg model =
                                     , sendToFrontend clientId (GotDataFile dataFile)
                                     , Backend.Cmd.verifyRandomAtmosphericInteger model
                                     , sendToFrontend clientId
-                                        (SendMessage <| "Success! You are signed in with random atmospheric integerg " ++ String.fromInt (model.randomAtmosphericInt |> Maybe.withDefault 0))
+                                        (SendMessage <| "Success! You are signed in with random atmospheric integer " ++ String.fromInt (model.randomAtmosphericInt |> Maybe.withDefault 0))
                                     ]
                                 )
 
