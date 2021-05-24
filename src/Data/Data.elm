@@ -239,6 +239,10 @@ filterData1 jobFragment taskFragment data =
 
 filterData : Time.Posix -> String -> String -> String -> List Data -> List Data
 filterData posix jobFragment taskFragment earliestDateAsString data =
+    --if jobFragment == "" && taskFragment == "" && earliestDateAsString == "" then
+    --    data
+    --
+    --else
     let
         earliestTime : Int
         earliestTime =

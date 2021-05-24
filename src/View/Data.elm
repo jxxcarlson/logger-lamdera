@@ -154,11 +154,11 @@ summary model =
 
 
 itemCount model =
-    E.el [ Font.bold ] (E.text <| "Count: " ++ String.fromInt (List.length model.filteredData))
+    E.el [ Font.bold ] (E.text <| "Count: " ++ String.fromInt model.count)
 
 
 totalHours model =
-    E.el [ Font.bold ] (E.text <| "Total hours: " ++ String.fromFloat (Utility.roundTo 2 <| Data.totalValue model.filteredData / 3600.0))
+    E.el [ Font.bold ] (E.text <| "Total hours: " ++ String.fromFloat (Utility.roundTo 2 <| model.totalValue / 3600))
 
 
 messageRow model =

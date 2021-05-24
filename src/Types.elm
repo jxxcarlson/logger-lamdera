@@ -34,6 +34,7 @@ type alias FrontendModel =
     , description : String
     , job : String
     , totalValue : Float
+    , count : Int
     , hourlyRate : String
     , jobFilter : String
     , taskFilter : String

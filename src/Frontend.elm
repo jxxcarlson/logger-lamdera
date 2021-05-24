@@ -68,6 +68,7 @@ init url key =
       , filteredData = []
       , job = ""
       , totalValue = 0
+      , count = 0
       , hourlyRate = ""
       , jobFilter = ""
       , taskFilter = ""
@@ -184,15 +185,13 @@ update msg model =
         InputJobFilter str ->
             let
                 filteredData =
-                    filterData model
-
-                total =
-                    Data.totalValue filteredData
+                    filterData2 model str model.taskFilter model.sinceDayFilter
             in
             ( { model
                 | jobFilter = str
-                , filteredData = filterData model
-                , totalValue = total
+                , filteredData = filteredData
+                , totalValue = Data.totalValue filteredData
+                , count = List.length filteredData
               }
             , Cmd.none
             )
@@ -200,15 +199,13 @@ update msg model =
         InputTaskFilter str ->
             let
                 filteredData =
-                    filterData model
-
-                total =
-                    Data.totalValue filteredData
+                    filterData2 model model.jobFilter str model.sinceDayFilter
             in
             ( { model
                 | taskFilter = str
-                , totalValue = total
+                , totalValue = Data.totalValue filteredData
                 , filteredData = filteredData
+                , count = List.length filteredData
               }
             , Cmd.none
             )
@@ -216,15 +213,13 @@ update msg model =
         InputSinceDayFilter str ->
             let
                 filteredData =
-                    filterData model
-
-                total =
-                    Data.totalValue filteredData
+                    filterData2 model model.jobFilter model.taskFilter str
             in
             ( { model
                 | sinceDayFilter = str
                 , filteredData = filteredData
-                , totalValue = total
+                , totalValue = Data.totalValue filteredData
+                , count = List.length filteredData
               }
             , Cmd.none
             )
@@ -390,7 +385,14 @@ updateFromBackend msg model =
             ( { model | message = message }, Cmd.none )
 
         GotDataFile dataFile ->
-            ( { model | dataFile = Just dataFile, filteredData = dataFile.data, totalValue = Data.totalValue dataFile.data }, Cmd.none )
+            ( { model
+                | dataFile = Just dataFile
+                , filteredData = dataFile.data
+                , totalValue = Data.totalValue dataFile.data
+                , count = List.length dataFile.data
+              }
+            , Cmd.none
+            )
 
 
 view : Model -> { title : String, body : List (Html.Html FrontendMsg) }
@@ -403,6 +405,11 @@ view model =
 
 
 -- HELPERS
+
+
+filterData2 : Model -> String -> String -> String -> List Data.Data
+filterData2 model jobFilter taskFilter sinceDayFilter =
+    Data.filterData model.time jobFilter taskFilter sinceDayFilter (Maybe.map .data model.dataFile |> Maybe.withDefault [])
 
 
 filterData : Model -> List Data.Data
