@@ -45,7 +45,7 @@ viewData_ model =
                 [ E.spacing 8
                 , E.paddingXY 12 12
                 , E.height (E.px (model.windowHeight - 430))
-                , E.width (E.px (model.windowWidth - 232))
+                , panelWidth model
                 , Background.color Color.paleBlue
                 , Font.size 16
                 , E.scrollbarY
@@ -57,7 +57,7 @@ viewData_ model =
                 [ E.spacing 8
                 , E.paddingXY 12 12
                 , E.height (E.px (model.windowHeight - 430))
-                , E.width (E.px (model.windowWidth - 232))
+                , panelWidth model
                 , Background.color Color.paleBlue
                 , Font.size 16
                 , E.scrollbarY
@@ -68,7 +68,7 @@ viewData_ model =
 logItem_ model =
     E.column [ E.spacing 8 ]
         [ logItem model
-        , E.row [ E.spacing 8 ]
+        , E.row [ E.spacing 8, E.width (E.px <| appWidth_ model - 90) ]
             [ Button.saveItem
             , View.Input.jobInput model
             , View.Input.descriptionInput model
@@ -124,12 +124,16 @@ viewElapsedTime model =
             E.none
 
 
+panelWidth model =
+    E.width (E.px (min 1400 (model.windowWidth - 140)))
+
+
 dataHeader model =
     E.row
         [ E.spacing 12
         , E.paddingXY 0 8
         , E.height (E.px 30)
-        , E.width (E.px <| appWidth_ model - 89)
+        , panelWidth model
         , Font.size 14
         , Background.color Color.paleBlue
         , E.paddingXY 8 8
@@ -143,7 +147,7 @@ summary model =
         [ E.spacing 12
         , E.paddingXY 0 8
         , E.height (E.px 30)
-        , E.width (E.px <| appWidth_ model - 89)
+        , panelWidth model
         , Font.size 14
         , Background.color Color.paleBlue
         , E.paddingXY 8 8
@@ -163,7 +167,7 @@ totalHours model =
 
 messageRow model =
     E.row
-        [ E.width E.fill
+        [ panelWidth model
         , E.height (E.px 30)
         , E.paddingXY 8 4
         , View.Style.bgGray 0.21

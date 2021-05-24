@@ -65,7 +65,11 @@ endTimeInput model =
 
 
 descriptionInput model =
-    inputFieldTemplate (E.px (model.windowWidth - 448)) "Description" InputDescription model.description
+    inputFieldTemplate (panelWidth model) "Description" InputDescription model.description
+
+
+panelWidth model =
+    E.px (model.windowWidth - 510)
 
 
 jobInput model =
