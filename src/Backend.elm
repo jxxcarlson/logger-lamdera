@@ -94,6 +94,7 @@ updateFromFrontend sessionId clientId msg model =
                                     [ sendToFrontend clientId (SendUser userData.user)
                                     , sendToFrontend clientId
                                         (SendMessage <| "Success! You are signed in, but there is no data file ")
+                                    , Backend.Cmd.verifyRandomAtmosphericInteger model
                                     ]
                                 )
 
@@ -102,14 +103,19 @@ updateFromFrontend sessionId clientId msg model =
                                 , Cmd.batch
                                     [ sendToFrontend clientId (SendUser userData.user)
                                     , sendToFrontend clientId (GotDataFile dataFile)
-
-                                    --, sendToFrontend clientId
-                                    --    (SendMessage <| "Success! You are signed in: " ++ String.fromInt (model.randomAtmosphericInt |> Maybe.withDefault 0))
+                                    , Backend.Cmd.verifyRandomAtmosphericInteger model
+                                    , sendToFrontend clientId
+                                        (SendMessage <| "Success! You are signed in with random atmospheric integerg " ++ String.fromInt (model.randomAtmosphericInt |> Maybe.withDefault 0))
                                     ]
                                 )
 
                     else
-                        ( model, sendToFrontend clientId (SendMessage "Sorry, password and username don't match") )
+                        ( model
+                        , Cmd.batch
+                            [ Backend.Cmd.verifyRandomAtmosphericInteger model
+                            , sendToFrontend clientId (SendMessage "Sorry, password and username don't match")
+                            ]
+                        )
 
                 Nothing ->
                     Backend.Update.setupUser model clientId username encryptedPassword

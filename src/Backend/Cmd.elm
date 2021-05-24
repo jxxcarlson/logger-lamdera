@@ -1,7 +1,7 @@
-module Backend.Cmd exposing (getRandomNumberBE, randomNumberUrl)
+module Backend.Cmd exposing (getRandomNumberBE, randomNumberUrl, verifyRandomAtmosphericInteger)
 
 import Http
-import Types exposing (BackendMsg(..))
+import Types exposing (BackendModel, BackendMsg(..))
 
 
 getRandomNumberBE : Cmd BackendMsg
@@ -10,6 +10,16 @@ getRandomNumberBE =
         { url = randomNumberUrl 9
         , expect = Http.expectString GotAtomsphericRandomNumberBE
         }
+
+
+verifyRandomAtmosphericInteger : BackendModel -> Cmd BackendMsg
+verifyRandomAtmosphericInteger model =
+    case model.randomAtmosphericInt of
+        Nothing ->
+            getRandomNumberBE
+
+        Just _ ->
+            Cmd.none
 
 
 {-| maxDigits < 10
