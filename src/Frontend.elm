@@ -143,12 +143,6 @@ update msg model =
                 Err _ ->
                     ( model, Cmd.none )
 
-        --let
-        --    _ =
-        --        Debug.log "FE ATMOS RN" result
-        --in
-        --( { model | message = "ATMOS" ++ Debug.toString result }, Cmd.none )
-        -- UI
         GotNewWindowDimensions w h ->
             ( { model | windowWidth = w, windowHeight = h }, Cmd.none )
 

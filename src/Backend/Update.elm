@@ -42,10 +42,6 @@ gotAtomsphericRandomNumber model result =
                     )
 
         Err err ->
-            let
-                _ =
-                    Debug.log "ATMOS ERR" err
-            in
             ( model, Cmd.none )
 
 
