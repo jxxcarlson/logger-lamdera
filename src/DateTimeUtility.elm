@@ -1,5 +1,6 @@
 module DateTimeUtility exposing
-    ( dateFromString
+    ( changeTime
+    , dateFromString
     , elapsedTimeAsMinutes
     , elapsedTimeAsSeconds
     , elapsedTimeAsString
@@ -13,6 +14,7 @@ module DateTimeUtility exposing
 import Calendar exposing (Date)
 import Clock
 import DateTime exposing (DateTime)
+import HMParser
 import List.Extra
 import Maybe.Extra
 import Time exposing (Month(..))
@@ -20,6 +22,34 @@ import Time exposing (Month(..))
 
 type alias Seconds =
     Int
+
+
+{-|
+
+    Let t2 = changeTime "00:01" "00:02: t1
+    Then t2 is a Posix time one minute greater than t1.
+
+-}
+changeTime : String -> String -> Time.Posix -> Time.Posix
+changeTime t1 t2 posix =
+    case ( HMParser.getMinutes t1, HMParser.getMinutes t2 ) of
+        ( Nothing, _ ) ->
+            posix
+
+        ( _, Nothing ) ->
+            posix
+
+        ( Just m1, Just m2 ) ->
+            let
+                millis : Int
+                millis =
+                    Time.posixToMillis posix
+
+                newMillis : Int
+                newMillis =
+                    millis + 60000 * (m2 - m1)
+            in
+            Time.millisToPosix newMillis
 
 
 yearFromPosix : Time.Posix -> Int
