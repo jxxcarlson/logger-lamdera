@@ -104,7 +104,6 @@ type FrontendMsg
       -- UI
     | GotNewWindowDimensions Int Int
     | ChangePopupStatus PopupStatus
-    | ToggleMode
       -- LOG
     | InputStartTime String
     | InputEndTime String

@@ -158,14 +158,6 @@ update msg model =
         NoOpFrontendMsg ->
             ( model, Cmd.none )
 
-        ToggleMode ->
-            case model.mode of
-                DefaultMode ->
-                    ( { model | mode = EditMode }, Cmd.none )
-
-                EditMode ->
-                    ( { model | mode = DefaultMode }, Cmd.none )
-
         -- LOG
         InputStartTime str ->
             ( { model | inputStartTime = str }, Cmd.none )
