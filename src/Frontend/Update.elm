@@ -5,6 +5,7 @@ module Frontend.Update exposing
     )
 
 import Data.Data as Data
+import DateTimeUtility
 import Lamdera exposing (sendToBackend)
 import List.Extra
 import Token
@@ -42,10 +43,24 @@ saveEditedItem currentDatum model =
 
                 ( Just dataFile, Just user ) ->
                     let
+                        startTime =
+                            DateTimeUtility.zonedTimeString model.zone (Data.getStartTimeAsPosix datum)
+
+                        newStartTime =
+                            DateTimeUtility.changeTime startTime model.inputStartTime (Data.getStartTimeAsPosix datum)
+
+                        endTime =
+                            DateTimeUtility.zonedTimeString model.zone (Data.getEndTimeAsPosix datum)
+
+                        newEndTime =
+                            DateTimeUtility.changeTime endTime model.inputEndTime (Data.getEndTimeAsPosix datum)
+
                         newDatum =
                             datum
                                 |> Data.updateJob model.job
                                 |> Data.updateDescription model.description
+                                |> Data.updateStartTime newStartTime
+                                |> Data.updateEndTime newEndTime
 
                         newFilteredData =
                             List.Extra.setIf (\datum_ -> Data.getId datum_ == Data.getId newDatum) newDatum model.filteredData

@@ -66,11 +66,11 @@ passwordInput model =
 
 
 startTimeInput model =
-    inputFieldTemplate [] (E.px 120) "Start" InputStartTime model.inputStartTime
+    inputFieldTemplate [ Background.color Color.palePink ] (E.px 100) "Start" InputStartTime model.inputStartTime
 
 
 endTimeInput model =
-    inputFieldTemplate [] (E.px 120) "End" InputEndTime model.inputEndTime
+    inputFieldTemplate [ Background.color Color.palePink ] (E.px 100) "End" InputEndTime model.inputEndTime
 
 
 descriptionInput model =

@@ -5,8 +5,12 @@ module Data.Data exposing
     , DataType(..)
     , filterData
     , getDescription
+    , getEndTime
+    , getEndTimeAsPosix
     , getId
     , getJob
+    , getStartTime
+    , getStartTimeAsPosix
     , insertDataFile
     , insertDatum
     , insertDatum_
@@ -19,7 +23,9 @@ module Data.Data exposing
     , testDatum
     , totalValue
     , updateDescription
+    , updateEndTime
     , updateJob
+    , updateStartTime
     )
 
 import DateTimeUtility
@@ -64,6 +70,26 @@ updateDescription str datum =
 
         Quantity data ->
             Quantity { data | desc = str }
+
+
+updateStartTime : Time.Posix -> Data -> Data
+updateStartTime time datum =
+    case datum of
+        Task data ->
+            Task { data | start = time }
+
+        Quantity data ->
+            Quantity { data | start = time }
+
+
+updateEndTime : Time.Posix -> Data -> Data
+updateEndTime time datum =
+    case datum of
+        Task data ->
+            Task { data | end = time }
+
+        Quantity data ->
+            Quantity { data | end = time }
 
 
 type DataType
@@ -210,6 +236,36 @@ getDescription datum =
 
         Quantity { start, end, desc, value } ->
             desc
+
+
+getStartTimeAsPosix : Data -> Time.Posix
+getStartTimeAsPosix datum =
+    case datum of
+        Task { start, end, desc, job } ->
+            start
+
+        Quantity { start, end, desc, value } ->
+            start
+
+
+getEndTimeAsPosix : Data -> Time.Posix
+getEndTimeAsPosix datum =
+    case datum of
+        Task { start, end, desc, job } ->
+            end
+
+        Quantity { start, end, desc, value } ->
+            end
+
+
+getStartTime : Data -> Int
+getStartTime datum =
+    case datum of
+        Task { start, end, desc, job } ->
+            Time.posixToMillis start
+
+        Quantity { start, end, desc, value } ->
+            Time.posixToMillis start
 
 
 getEndTime : Data -> Int

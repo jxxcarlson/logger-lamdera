@@ -6,6 +6,7 @@ import Browser.Events
 import Browser.Navigation as Nav
 import Data.Data as Data
 import Data.Parse
+import DateTimeUtility
 import File
 import File.Download as Download
 import File.Select as Select
@@ -236,6 +237,8 @@ update msg model =
                 , dataEntryMode = EditItemEntry
                 , job = Data.getJob datum
                 , description = Data.getDescription datum
+                , inputStartTime = DateTimeUtility.zonedTimeString model.zone (Data.getStartTimeAsPosix datum)
+                , inputEndTime = DateTimeUtility.zonedTimeString model.zone (Data.getEndTimeAsPosix datum)
               }
             , Cmd.none
             )

@@ -91,6 +91,15 @@ logItem model =
 
 
 viewStartTime model =
+    case model.dataEntryMode of
+        StandardDataEntry ->
+            viewStartTime_ model
+
+        EditItemEntry ->
+            View.Input.startTimeInput model
+
+
+viewStartTime_ model =
     let
         label =
             case model.startTime of
@@ -104,6 +113,15 @@ viewStartTime model =
 
 
 viewEndTime model =
+    case model.dataEntryMode of
+        StandardDataEntry ->
+            viewEndTime_ model
+
+        EditItemEntry ->
+            View.Input.endTimeInput model
+
+
+viewEndTime_ model =
     let
         label =
             case model.endTime of
