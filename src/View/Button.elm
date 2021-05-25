@@ -125,8 +125,13 @@ setEndTime =
     buttonTemplate [ E.width (E.px 100) ] SetEndTime "End task"
 
 
-saveItem =
-    buttonTemplate [ E.width (E.px 100) ] SaveItem "Save"
+saveItem model =
+    case model.dataEntryMode of
+        StandardDataEntry ->
+            buttonTemplate [ E.width (E.px 100) ] SaveItem "Save"
+
+        EditItemEntry ->
+            buttonTemplate [ E.width (E.px 100), Font.color Color.palePink, Background.color Color.darkPink ] SaveItem "Save Edit"
 
 
 exportTimesheet =

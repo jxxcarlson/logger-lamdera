@@ -2,6 +2,7 @@ module View.Color exposing
     ( black
     , blue
     , darkBlue
+    , darkPink
     , darkRed
     , gray
     , lessPaleBlue
@@ -41,6 +42,14 @@ medGray =
 black : E.Color
 black =
     E.rgb 20 20 20
+
+
+darkPink =
+    E.rgb255 122 32 106
+
+
+
+-- 163 46 142
 
 
 palePink =

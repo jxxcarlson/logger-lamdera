@@ -70,7 +70,7 @@ logItem_ model =
     E.column [ E.spacing 8 ]
         [ logItem model
         , E.row [ E.spacing 8, E.width (E.px <| appWidth_ model - 90) ]
-            [ Button.saveItem
+            [ Button.saveItem model
             , View.Input.jobInput model
             , View.Input.descriptionInput model
             ]
