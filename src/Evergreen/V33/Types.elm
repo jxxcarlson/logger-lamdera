@@ -6,7 +6,7 @@ import Browser.Navigation
 import Evergreen.V33.Authentication
 import Evergreen.V33.Data.Data
 import Evergreen.V33.User
-import File
+import File exposing (File)
 import Http
 import Random
 import Time
