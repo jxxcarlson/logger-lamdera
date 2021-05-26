@@ -6,6 +6,7 @@ module Backend.Update exposing
 import Authentication
 import Data.Data exposing (DataType(..))
 import Data.Manager
+import Hex
 import Lamdera exposing (ClientId, broadcast, sendToFrontend)
 import Random
 import Token
@@ -50,30 +51,68 @@ gotAtomsphericRandomNumber model result =
 
 
 setupUser : Model -> ClientId -> String -> String -> ( BackendModel, Cmd BackendMsg )
-setupUser model clientId username encryptedPassword =
+setupUser model clientId username transitPassword =
     let
-        { token, seed } =
-            Token.get model.randomSeed
+        ( randInt, seed ) =
+            Random.step (Random.int (Random.minInt // 2) Random.maxInt) model.randomSeed
+
+        randomHex =
+            Hex.toString randInt |> String.toUpper
 
         tokenData =
             Token.get seed
 
         user =
             { username = username, id = tokenData.token, realname = "Undefined", email = "Undefined" }
-
-        newAuthDict =
-            Authentication.insert user encryptedPassword model.authenticationDict
-
-        newDataFile =
-            Data.Data.newDataFile model.time username "Work Log" TTask
-
-        newDataDict =
-            Data.Manager.setupLog model.time username "Work Log" TTask newAuthDict model.dataDict
     in
-    ( { model | randomSeed = tokenData.seed, authenticationDict = newAuthDict, dataDict = newDataDict }
-    , Cmd.batch
-        [ sendToFrontend clientId (SendUser user)
-        , sendToFrontend clientId (SendMessage "We have set up your new account and Work Log")
-        , sendToFrontend clientId (GotDataFile newDataFile)
-        ]
-    )
+    case Authentication.insert user randomHex transitPassword model.authenticationDict of
+        Err str ->
+            ( { model | randomSeed = seed }, sendToFrontend clientId (SendMessage ("Error: " ++ str)) )
+
+        Ok authDict ->
+            let
+                newDataFile =
+                    Data.Data.newDataFile model.time username "Work Log" TTask
+
+                newDataDict =
+                    Data.Manager.setupLog model.time username "Work Log" TTask authDict model.dataDict
+            in
+            ( { model | randomSeed = seed, authenticationDict = authDict, dataDict = newDataDict }
+            , Cmd.batch
+                [ sendToFrontend clientId (SendUser user)
+                , sendToFrontend clientId (SendMessage "We have set up your new account and Work Log")
+                , sendToFrontend clientId (GotDataFile newDataFile)
+                ]
+            )
+
+
+
+--
+--setupUser : Model -> ClientId -> String -> String -> ( BackendModel, Cmd BackendMsg )
+--setupUser model clientId username encryptedPassword =
+--    let
+--        { token, seed } =
+--            Token.get model.randomSeed
+--
+--        tokenData =
+--            Token.get seed
+--
+--        user =
+--            { username = username, id = tokenData.token, realname = "Undefined", email = "Undefined" }
+--
+--        newAuthDict =
+--            Authentication.insert user encryptedPassword model.authenticationDict
+--
+--        newDataFile =
+--            Data.Data.newDataFile model.time username "Work Log" TTask
+--
+--        newDataDict =
+--            Data.Manager.setupLog model.time username "Work Log" TTask newAuthDict model.dataDict
+--    in
+--    ( { model | randomSeed = tokenData.seed, authenticationDict = newAuthDict, dataDict = newDataDict }
+--    , Cmd.batch
+--        [ sendToFrontend clientId (SendUser user)
+--        , sendToFrontend clientId (SendMessage "We have set up your new account and Work Log")
+--        , sendToFrontend clientId (GotDataFile newDataFile)
+--        ]
+--    )

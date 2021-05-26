@@ -1,5 +1,12 @@
-module Authentication exposing (AuthenticationDict, encrypt, insert, users, verify)
+module Authentication exposing
+    ( AuthenticationDict
+    , encryptForTransit
+    , insert
+    , users
+    , verify
+    )
 
+import Credentials exposing (Credentials)
 import Crypto.HMAC exposing (sha256)
 import Dict exposing (Dict)
 import Env
@@ -11,7 +18,7 @@ type alias Username =
 
 
 type alias UserData =
-    { user : User, token : String }
+    { user : User, credentials : Credentials }
 
 
 type alias AuthenticationDict =
@@ -23,21 +30,31 @@ users authDict =
     authDict |> Dict.values |> List.map .user
 
 
-insert : User -> String -> AuthenticationDict -> AuthenticationDict
-insert user encryptedPassword authDict =
-    Dict.insert user.username { user = user, token = encryptedPassword } authDict
+insert : User -> String -> String -> AuthenticationDict -> Result String AuthenticationDict
+insert user salt transitPassword authDict =
+    case Credentials.hashPw salt transitPassword of
+        Err _ ->
+            Err "Could not generate credentials"
+
+        Ok credentials ->
+            Ok (Dict.insert user.username { user = user, credentials = credentials } authDict)
 
 
-encrypt : String -> String
-encrypt str =
-    Crypto.HMAC.digest sha256 Env.authKey str
+encryptForTransit : String -> String
+encryptForTransit str =
+    Crypto.HMAC.digest sha256 Env.transitKey str
 
 
 verify : String -> String -> AuthenticationDict -> Bool
-verify username encryptedPassword authDict =
+verify username transitPassword authDict =
     case Dict.get username authDict of
         Nothing ->
             False
 
         Just data ->
-            encryptedPassword == data.token
+            case Credentials.check transitPassword data.credentials of
+                Ok () ->
+                    True
+
+                Err _ ->
+                    False

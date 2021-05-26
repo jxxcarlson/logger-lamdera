@@ -280,7 +280,7 @@ update msg model =
         SignIn ->
             if String.length model.inputPassword >= 8 then
                 ( model
-                , sendToBackend (SignInOrSignUp model.inputUsername (Authentication.encrypt model.inputPassword))
+                , sendToBackend (SignInOrSignUp model.inputUsername (Authentication.encryptForTransit model.inputPassword))
                 )
 
             else

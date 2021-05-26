@@ -8,5 +8,5 @@ dummyConfigItem =
     ""
 
 
-authKey =
-    "eqkzfABz70013-vhxvh(!)nlspm-aukemvz?/4$jhh-ekODVAZ891Qoaeaw"
+transitKey =
+    "166ce651-dd8c-462e-8866"
