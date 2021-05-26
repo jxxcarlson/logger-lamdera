@@ -10,6 +10,7 @@ import Time
 import Types exposing (FrontendMsg(..))
 import View.Color as Color
 import View.Style
+import View.Utility
 
 
 heading : DataType -> Element FrontendMsg
@@ -44,6 +45,7 @@ editItem datum =
         , E.height (E.px 20)
         , Background.color Color.lightBlue2
         , Font.color Color.palePink
+        , View.Utility.elementAttribute "title" "Click to edit this item"
         ]
         (EditItem datum)
         ""
