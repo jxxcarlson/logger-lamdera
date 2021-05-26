@@ -178,7 +178,7 @@ exportDatum datum =
         Task { id, start, end, desc, job } ->
             [ id
             , Time.posixToMillis start |> String.fromInt
-            , Time.posixToMillis start |> String.fromInt
+            , Time.posixToMillis end |> String.fromInt
             , String.replace "," ";" desc
             , job
             ]
